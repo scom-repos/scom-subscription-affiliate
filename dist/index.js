@@ -273,7 +273,7 @@ define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["
             this.bundleWrapper.visible = true;
         }
         render() {
-            return (this.$render("i-stack", { direction: "vertical", border: { width: 1, style: 'solid', color: Theme.divider, radius: 6 }, wrap: "wrap" },
+            return (this.$render("i-stack", { direction: "vertical", border: { top: { width: 1, style: 'solid', color: Theme.divider } }, wrap: "wrap" },
                 this.$render("i-label", { width: "100%", padding: { top: '0.75rem', bottom: '0.75rem', left: '0.75rem', right: '0.75rem' }, font: { size: '1rem', weight: 600, color: Theme.text.secondary, transform: 'uppercase' }, lineHeight: 1.5, caption: "Subscription" }),
                 this.$render("i-stack", { direction: "vertical", padding: { bottom: '0.75rem' } },
                     this.$render("i-panel", { id: "pnlOffer", maxWidth: "100%", stack: { grow: '1', shrink: '1', basis: '0' }, visible: false },
@@ -307,6 +307,12 @@ define("@scom/scom-subscription-affiliate", ["require", "exports", "@ijstech/com
     Object.defineProperty(exports, "__esModule", { value: true });
     const Theme = components_4.Styles.Theme.ThemeVars;
     let ScomSubscriptionAffiliate = class ScomSubscriptionAffiliate extends components_4.Module {
+        get dataManager() {
+            return this._dataManager;
+        }
+        set dataManager(manager) {
+            this._dataManager = manager;
+        }
         init() {
             super.init();
         }
@@ -428,6 +434,18 @@ define("@scom/scom-subscription-affiliate", ["require", "exports", "@ijstech/com
         getConfigurators() {
             return [
                 {
+                    name: 'Builder Configurator',
+                    target: 'Builders',
+                    getActions: (category) => {
+                        const actions = this.getActions();
+                        return actions;
+                    },
+                    getData: this.getData.bind(this),
+                    setData: this.setData.bind(this),
+                    getTag: this.getTag.bind(this),
+                    setTag: this.setTag.bind(this)
+                },
+                {
                     name: 'Editor',
                     target: 'Editor',
                     getActions: (category) => {
@@ -474,7 +492,7 @@ define("@scom/scom-subscription-affiliate", ["require", "exports", "@ijstech/com
             this.$render("i-panel", { background: { color: Theme.background.paper } },
                 this.$render("i-panel", { position: "relative", width: "100%", height: 0, overflow: "hidden", padding: { bottom: "40%" } },
                     this.$render("i-image", { id: "imgBanner", class: index_css_2.imageStyle, position: "absolute", display: "block", width: "100%", height: "auto", top: "40%", left: 0, objectFit: "cover" })),
-                this.$render("i-stack", { direction: "vertical", position: "relative", padding: { top: '1.5rem', bottom: '0.75rem', left: '1rem', right: '1rem' } },
+                this.$render("i-stack", { direction: "vertical", position: "relative", padding: { top: '1.5rem', bottom: '1.25rem', left: '1rem', right: '1rem' } },
                     this.$render("i-panel", { height: "0.75rem", width: "100%", position: "absolute", top: 0, left: 0, background: { color: `color-mix(in srgb, ${Theme.background.paper}, #fff 5%)` } }),
                     this.$render("i-panel", { id: "pnlAvatar", padding: { bottom: "4rem" }, visible: false },
                         this.$render("i-panel", { border: {

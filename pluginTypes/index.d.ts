@@ -156,6 +156,7 @@ declare module "@scom/scom-subscription-affiliate/components/index.ts" {
 /// <amd-module name="@scom/scom-subscription-affiliate" />
 declare module "@scom/scom-subscription-affiliate" {
     import { Module, ControlElement } from '@ijstech/components';
+    import { SocialDataManager } from '@scom/scom-social-sdk';
     interface ScomSubscriptionAffiliateElement extends ControlElement {
     }
     global {
@@ -178,9 +179,11 @@ declare module "@scom/scom-subscription-affiliate" {
         private lblCommunityType;
         private subscriptionModule;
         private _data;
-        private dataManager;
+        private _dataManager;
         private communityInfo;
         private copyTimer;
+        get dataManager(): SocialDataManager;
+        set dataManager(manager: SocialDataManager);
         init(): void;
         private setData;
         private getData;

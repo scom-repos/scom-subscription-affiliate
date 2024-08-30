@@ -45,9 +45,17 @@ export default class ScomSubscriptionAffiliate extends Module {
     private lblCommunityType: Label;
     private subscriptionModule: SubscriptionModule;
     private _data: ISubscriptionAffiliate;
-    private dataManager: SocialDataManager;
+    private _dataManager: SocialDataManager;
     private communityInfo: ICommunityInfo;
     private copyTimer: any;
+
+    get dataManager() {
+        return this._dataManager;
+    }
+
+    set dataManager(manager: SocialDataManager) {
+        this._dataManager = manager;
+    }
 
     init() {
         super.init();
@@ -237,7 +245,7 @@ export default class ScomSubscriptionAffiliate extends Module {
             <i-panel position="relative" width="100%" height={0} overflow="hidden" padding={{ bottom: "40%" }}>
                 <i-image id="imgBanner" class={imageStyle} position="absolute" display="block" width="100%" height="auto" top="40%" left={0} objectFit="cover"></i-image>
             </i-panel>
-            <i-stack direction="vertical" position="relative" padding={{ top: '1.5rem', bottom: '0.75rem', left: '1rem', right: '1rem' }}>
+            <i-stack direction="vertical" position="relative" padding={{ top: '1.5rem', bottom: '1.25rem', left: '1rem', right: '1rem' }}>
                 <i-panel height="0.75rem" width="100%" position="absolute" top={0} left={0} background={{ color: `color-mix(in srgb, ${Theme.background.paper}, #fff 5%)` }} />
                 <i-panel id="pnlAvatar" padding={{ bottom: "4rem" }} visible={false}>
                     <i-panel

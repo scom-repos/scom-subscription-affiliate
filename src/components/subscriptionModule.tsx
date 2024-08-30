@@ -162,7 +162,7 @@ export class SubscriptionModule extends Module {
         return (
             <i-stack
                 direction="vertical"
-                border={{ width: 1, style: 'solid', color: Theme.divider, radius: 6 }}
+                border={{ top: { width: 1, style: 'solid', color: Theme.divider } }}
                 wrap="wrap"
             >
                 <i-label

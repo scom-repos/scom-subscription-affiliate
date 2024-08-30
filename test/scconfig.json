@@ -72,5 +72,101 @@
         "tablet": 1280,
         "desktop": 1920
     },
-    "infuraId": "928992396bec4e7ea3b68b0e2d6ee4fe"
+    "infuraId": "928992396bec4e7ea3b68b0e2d6ee4fe",
+    "nostr": {
+        "version": 1.5,
+        "writeRelays": [
+            {
+                "url": "https://relay.decom.app"
+
+            },
+            {
+                "url": "wss://relay.primal.net"
+            },
+            {
+                "url": "wss://nos.lol"
+            },
+            {
+                "url": "wss://relay.damus.io"   
+            }   
+        ],
+        "publicIndexingRelay": "https://relay.decom.app",
+        "mqttBrokerUrl": "wss://85919c14d7de4c03bb9e6ef0a5bde373.s1.eu.hivemq.cloud:8884/mqtt",
+        "mqttClientOptions": {
+            "username": "sc-test-subscribe",
+            "password": "BQKuebFzGD9byLI"
+        },
+        "mqttPublicTopic": "nostr-public",
+        "mqttPrivateTopic": "nostr-private",
+        "apiUrl": "/api/social/v0",
+        "ipLocationServiceBaseUrl": "https://geolookup.decom.app/"
+    },
+    "themes": {
+        "default": "dark",
+        "light": {},
+        "dark": {
+            "background": {
+                "default": "#1a1a1a",
+                "paper": "#121212",
+                "main": "#000",
+                "modal": "#000",
+                "gradient": "linear-gradient(135deg, #ffefa6 0%, #fde192 20%, #f8bc5d 40%, #f39323 100%)"
+            },
+            "colors": {
+                "primary": {
+                    "contrastText": "#fff",
+                    "dark": "#FE8B10",
+                    "light": "#FEC710",
+                    "main": "#FE9F10"
+                },
+                "secondary": {
+                    "contrastText": "#fff",
+                    "light": "#AAAAAA",
+                    "main": "#444444",
+                    "dark": "#282828"
+                },
+                "warning": {
+                    "dark": "#ff9f2f",
+                    "light": "#ff9f2f",
+                    "main": "#ff9f2f"
+                },
+                "success": {
+                    "main": "#66e205",
+                    "light": "rgba(0, 186, 124, 0.1)"
+                },
+                "error": {
+                    "main": "#bc1870",
+                    "light": "rgba(249, 24, 128, 0.1)"
+                }
+            },
+            "divider": "rgb(47, 51, 54)",
+            "layout": {
+                "container": {
+                    "maxWidth": "77.5rem"
+                }
+            },
+            "text": {
+                "secondary": "#666666",
+                "primary": "#fff",
+                "disabled": "#757575"
+            },
+            "action": {
+                "active": "rgba(0, 0, 0, 0.54)",
+                "activeBackground": "#222222",
+                "hoverBackground": "#222222",
+                "hover": "#fff",
+                "disabled": "#404040"
+            },
+            "shadows": {
+                "1": "0 0 0 rgba(0, 0, 0, 0)"
+            },
+            "typography": {
+                "fontSize": "16px"
+            },
+            "input": {
+                "background": "#222222",
+                "fontColor": "#fff"
+            }
+        }
+    }
 }
