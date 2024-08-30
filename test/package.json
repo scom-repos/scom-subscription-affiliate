@@ -1,0 +1,32 @@
+{
+    "name": "@scom/demo-scom-subscription-affiliate",
+    "version": "0.1.0",
+    "engines": {
+        "node": ">=18.0.0"
+    },
+    "dependencies": {
+        "@ijstech/components": "^0.1.47",
+        "@ijstech/eth-wallet": "^0.1.35",
+        "@ijstech/eth-contract": "^0.1.14",
+        "@scom/scom-subscription-affiliate": "file:./ref"
+    },
+    "devDependencies": {
+        "@ijstech/cli": "^0.1.28",
+        "@ijstech/compiler": "^0.1.22",
+        "@scom/scom-product-contract": "^0.1.3",
+        "@scom/scom-token-list": "^0.1.0",
+        "@scom/scom-network-list": "^0.1.0",
+        "@scom/scom-network-picker": "^0.1.4",
+        "@scom/scom-dapp-container": "^0.1.2",
+        "@scom/scom-commission-fee-setup": "^0.1.1",
+        "@scom/scom-token-input": "^0.1.1",
+        "@scom/scom-wallet-modal": "^0.1.0",
+        "@scom/scom-tx-status-modal": "^0.1.0"
+    },
+    "scripts": {
+        "cp:libs": "rm -rf ref && mkdir ref && cp ../package.json ref/package.json && cp -r ../dist ref/dist && cp -r ../pluginTypes ref/pluginTypes && cp -r ../pluginTypes ref/types",
+        "build": "npm run cp:libs && rm -rf dist && npx @ijstech/compiler",
+        "serve": "npx @ijstech/cli serve 8032",
+        "test": "npm run build && npm run serve"
+    }
+}
