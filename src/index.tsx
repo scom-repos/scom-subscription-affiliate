@@ -50,7 +50,7 @@ export default class ScomSubscriptionAffiliate extends Module {
     private copyTimer: any;
 
     get dataManager() {
-        return this._dataManager;
+        return this._dataManager || application.store?.mainDataManager;
     }
 
     set dataManager(manager: SocialDataManager) {

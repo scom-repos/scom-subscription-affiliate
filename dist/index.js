@@ -308,7 +308,7 @@ define("@scom/scom-subscription-affiliate", ["require", "exports", "@ijstech/com
     const Theme = components_4.Styles.Theme.ThemeVars;
     let ScomSubscriptionAffiliate = class ScomSubscriptionAffiliate extends components_4.Module {
         get dataManager() {
-            return this._dataManager;
+            return this._dataManager || components_4.application.store?.mainDataManager;
         }
         set dataManager(manager) {
             this._dataManager = manager;
