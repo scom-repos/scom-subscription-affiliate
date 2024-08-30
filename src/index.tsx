@@ -9,12 +9,14 @@ import {
     Icon,
     application,
     Image,
+    FormatUtils,
 } from '@ijstech/components';
 import { ISubscriptionAffiliate } from './interface';
 import { imageStyle, preWrapStyle } from './index.css';
-import { getCommunityBasicInfoFromUri } from './utils';
-import { ICommunityInfo } from '@scom/scom-social-sdk';
+import { checkIsLoggedIn, fetchCommunityInfo, getCommunityBasicInfoFromUri } from './utils';
+import { ICommunityInfo, MembershipType, PaymentModel, SocialDataManager } from '@scom/scom-social-sdk';
 import formSchema from './formSchema';
+import { SubscriptionModule } from './components';
 
 
 interface ScomSubscriptionAffiliateElement extends ControlElement { }
@@ -41,7 +43,9 @@ export default class ScomSubscriptionAffiliate extends Module {
     private lblParentCommunity: Label;
     private lblDescription: Label;
     private lblCommunityType: Label;
+    private subscriptionModule: SubscriptionModule;
     private _data: ISubscriptionAffiliate;
+    private dataManager: SocialDataManager;
     private communityInfo: ICommunityInfo;
     private copyTimer: any;
 
@@ -51,6 +55,14 @@ export default class ScomSubscriptionAffiliate extends Module {
 
     private async setData(data: ISubscriptionAffiliate) {
         this._data = data;
+        this.clear();
+        if (this._data.communityUri) {
+            const parts = this._data.communityUri.split('/');
+            this._data.communityId = parts[0];
+            this._data.creatorId = parts[1];
+        }
+        this.communityInfo = await fetchCommunityInfo(this.dataManager, this._data.communityId, this._data.creatorId);
+        if (this.communityInfo) this.updateUI();
     }
 
     private getData() {
@@ -97,6 +109,62 @@ export default class ScomSubscriptionAffiliate extends Module {
         this.updateStyle('--colors-primary-main', this.tag[themeVar]?.buttonBackgroundColor);
     }
 
+    private clear() {
+        this.imgBanner.url = "";
+        this.imgAvatar.url = "";
+        this.pnlAvatar.visible = false;
+        this.lblName.caption = "";
+        this.lblDescription.caption = "";
+        this.lblPubkey.caption = "";
+        this.lblCommunityType.visible = false;
+        this.pnlParentCommunity.visible = false;
+        this.lblParentCommunity.caption = "";
+        this.subscriptionModule.visible = false;
+    }
+
+    private updateUI() {
+        this.imgBanner.url = this.communityInfo.bannerImgUrl;
+        this.imgAvatar.url = this.communityInfo.avatarImgUrl;
+        this.pnlAvatar.visible = !!this.communityInfo.avatarImgUrl;
+        this.lblName.caption = this.communityInfo.communityId;
+        this.lblDescription.caption = this.communityInfo.description;
+        this.lblPubkey.caption = FormatUtils.truncateWalletAddress(this.communityInfo.creatorId);
+        const isExclusive = this.communityInfo.membershipType === MembershipType.Protected;
+        this.lblCommunityType.visible = isExclusive;
+        if (this.communityInfo.parentCommunityUri) {
+            const { communityId } = getCommunityBasicInfoFromUri(this.communityInfo.parentCommunityUri);
+            this.pnlParentCommunity.visible = true;
+            this.lblParentCommunity.caption = communityId;
+        }
+        const subscriptions = this.communityInfo.policies?.filter(policy => policy.paymentModel === PaymentModel.Subscription);
+        if (subscriptions.length > 0) {
+            const subscription = subscriptions[0];
+            const isLoggedIn = checkIsLoggedIn();
+            let isSubscribed = false;
+            // if (isLoggedIn) {
+            //     const data = await checkUserSubscription(subscription.chainId, subscription.tokenAddress);
+            //     isSubscribed = data.isSubscribed;
+            // }
+            if (isSubscribed) {
+                this.subscriptionModule.visible = false;
+            } else {
+                this.subscriptionModule.setData({
+                    chainId: subscription.chainId,
+                    tokenAddress: subscription.tokenAddress,
+                    tokenType: subscription.tokenType,
+                    tokenId: subscription.tokenId,
+                    price: subscription.tokenAmount,
+                    currency: subscription.currency,
+                    durationInDays: subscription.durationInDays,
+                    discountRules: subscription.discountRules
+                })
+                this.subscriptionModule.visible = true;
+            }
+        } else {
+            this.subscriptionModule.visible = false;
+        }
+    }
+
     private getActions() {
         return [
             {
@@ -109,6 +177,18 @@ export default class ScomSubscriptionAffiliate extends Module {
 
     getConfigurators() {
         return [
+            {
+                name: 'Builder Configurator',
+                target: 'Builders',
+                getActions: (category?: string) => {
+                  const actions = this.getActions();
+                  return actions;
+                },
+                getData: this.getData.bind(this),
+                setData: this.setData.bind(this),
+                getTag: this.getTag.bind(this),
+                setTag: this.setTag.bind(this)
+            },
             {
               name: 'Editor',
               target: 'Editor',
@@ -242,6 +322,12 @@ export default class ScomSubscriptionAffiliate extends Module {
                     visible={false}
                 ></i-label>
             </i-stack>
+            <i-scom-subscription-module
+                id="subscriptionModule"
+                width="100%"
+                margin={{ top: '0.5rem', bottom: '0.75rem' }}
+                visible={false}
+            />
         </i-panel>
     }
 }

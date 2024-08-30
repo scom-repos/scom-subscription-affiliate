@@ -11,7 +11,7 @@ export function getCommunityBasicInfoFromUri(communityUri: string) {
     return info;
 }
 
-function checkIsLoggedIn() {
+export function checkIsLoggedIn() {
     const isLoggedIn = !!localStorage.getItem('loggedInAccount') && 
         !!localStorage.getItem('privateKey');
     return isLoggedIn;

@@ -15,7 +15,7 @@ import ScomNftMinter from '@scom/scom-nft-minter';
 import { ISubscriptionDiscountRule } from '@scom/scom-social-sdk';
 import { SubscriptionBundle } from './subscriptionBundle';
 import { ISubscription } from '../interface';
-import { getNFTRecipientWalletAddress } from '@scom-subscription-affiliate/utils';
+import { getNFTRecipientWalletAddress } from '../utils';
 
 const Theme = Styles.Theme.ThemeVars;
 
