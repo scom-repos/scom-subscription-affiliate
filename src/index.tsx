@@ -228,7 +228,7 @@ export default class ScomSubscriptionAffiliate extends Module {
     private viewParentCommunity() {
         if (!this.communityInfo?.parentCommunityUri) return;
         const { creatorId, communityId } = getCommunityBasicInfoFromUri(this.communityInfo.parentCommunityUri);
-        const ensMap = {};
+        const ensMap = application.store?.ensMap || {};
         const path = communityId + "/" + creatorId;
         let url = `#!/c/${path}`;
         for (let key in ensMap) {

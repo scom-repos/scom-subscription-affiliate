@@ -477,7 +477,7 @@ define("@scom/scom-subscription-affiliate", ["require", "exports", "@ijstech/com
             if (!this.communityInfo?.parentCommunityUri)
                 return;
             const { creatorId, communityId } = (0, utils_2.getCommunityBasicInfoFromUri)(this.communityInfo.parentCommunityUri);
-            const ensMap = {};
+            const ensMap = components_4.application.store?.ensMap || {};
             const path = communityId + "/" + creatorId;
             let url = `#!/c/${path}`;
             for (let key in ensMap) {
