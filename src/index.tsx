@@ -131,6 +131,21 @@ export default class ScomSubscriptionAffiliate extends Module {
         this.lblParentCommunity.caption = "";
         this.subscriptionModule.visible = false;
         this.commissions = [];
+        this.lblName.link.href = '';
+        this.lblName.link.target = '_blank';
+    }
+
+    private getCommunityUrl() {
+        const ensMap = application.store?.ensMap || {};
+        const path = this._data.communityId + "/" + this._data.creatorId;
+        let communityUrl = `https://noto.fan/#!/c/${path}`;
+        for (let key in ensMap) {
+            if (ensMap[key] === path) {
+                communityUrl = `https://noto.fan/#!/n/${key}`;
+                break;
+            }
+        }
+        return communityUrl;
     }
 
     private updateUI() {
@@ -138,6 +153,9 @@ export default class ScomSubscriptionAffiliate extends Module {
         this.imgAvatar.url = this.communityInfo.avatarImgUrl;
         this.pnlAvatar.visible = !!this.communityInfo.avatarImgUrl;
         this.lblName.caption = this.communityInfo.communityId;
+        const communityUrl = this.getCommunityUrl();
+        this.lblName.link.href = communityUrl;
+        this.lblName.link.target = communityUrl === window.location.origin ? '_self' : '_blank';
         this.lblDescription.caption = this.communityInfo.description;
         this.lblPubkey.caption = FormatUtils.truncateWalletAddress(this.communityInfo.creatorId);
         const isExclusive = this.communityInfo.membershipType === MembershipType.Protected;
@@ -286,7 +304,7 @@ export default class ScomSubscriptionAffiliate extends Module {
                     </i-panel>
                 </i-panel>
                 <i-stack alignItems='center' justifyContent="space-between" margin={{ bottom: "0.5rem" }}>
-                    <i-label id="lblName" font={{ size: '1.75rem', weight: 700 }} lineHeight="2.125rem"></i-label>
+                    <i-label id="lblName" font={{ size: '1.75rem', weight: 700 }} lineHeight="2.125rem" link={{ href: '#' }}></i-label>
                 </i-stack>
                 <i-stack
                     direction="horizontal"

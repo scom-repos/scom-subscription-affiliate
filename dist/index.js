@@ -379,12 +379,29 @@ define("@scom/scom-subscription-affiliate", ["require", "exports", "@ijstech/com
             this.lblParentCommunity.caption = "";
             this.subscriptionModule.visible = false;
             this.commissions = [];
+            this.lblName.link.href = '';
+            this.lblName.link.target = '_blank';
+        }
+        getCommunityUrl() {
+            const ensMap = components_4.application.store?.ensMap || {};
+            const path = this._data.communityId + "/" + this._data.creatorId;
+            let communityUrl = `https://noto.fan/#!/c/${path}`;
+            for (let key in ensMap) {
+                if (ensMap[key] === path) {
+                    communityUrl = `https://noto.fan/#!/n/${key}`;
+                    break;
+                }
+            }
+            return communityUrl;
         }
         updateUI() {
             this.imgBanner.url = this.communityInfo.bannerImgUrl;
             this.imgAvatar.url = this.communityInfo.avatarImgUrl;
             this.pnlAvatar.visible = !!this.communityInfo.avatarImgUrl;
             this.lblName.caption = this.communityInfo.communityId;
+            const communityUrl = this.getCommunityUrl();
+            this.lblName.link.href = communityUrl;
+            this.lblName.link.target = communityUrl === window.location.origin ? '_self' : '_blank';
             this.lblDescription.caption = this.communityInfo.description;
             this.lblPubkey.caption = components_4.FormatUtils.truncateWalletAddress(this.communityInfo.creatorId);
             const isExclusive = this.communityInfo.membershipType === scom_social_sdk_2.MembershipType.Protected;
@@ -514,7 +531,7 @@ define("@scom/scom-subscription-affiliate", ["require", "exports", "@ijstech/com
                             }, background: { color: Theme.background.paper }, overflow: 'hidden', width: '8.875rem', height: '8.875rem', position: 'absolute', top: '-5.5rem' },
                             this.$render("i-image", { id: 'imgAvatar', display: "block", width: "100%", height: "100%", objectFit: 'cover', border: { radius: '50%' }, background: { color: Theme.background.paper } }))),
                     this.$render("i-stack", { alignItems: 'center', justifyContent: "space-between", margin: { bottom: "0.5rem" } },
-                        this.$render("i-label", { id: "lblName", font: { size: '1.75rem', weight: 700 }, lineHeight: "2.125rem" })),
+                        this.$render("i-label", { id: "lblName", font: { size: '1.75rem', weight: 700 }, lineHeight: "2.125rem", link: { href: '#' } })),
                     this.$render("i-stack", { direction: "horizontal", alignItems: 'center', margin: { bottom: '0.5rem' }, gap: '0.5rem', cursor: 'pointer', opacity: 0.4, hover: { opacity: 1 }, onClick: this.onCopyPubkey },
                         this.$render("i-label", { id: 'lblPubkey', font: {
                                 size: '0.875rem',

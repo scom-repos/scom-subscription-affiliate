@@ -200,6 +200,7 @@ declare module "@scom/scom-subscription-affiliate" {
         private updateStyle;
         private updateTheme;
         private clear;
+        private getCommunityUrl;
         private updateUI;
         private getActions;
         getConfigurators(): {
