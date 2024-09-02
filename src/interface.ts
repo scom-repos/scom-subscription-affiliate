@@ -19,6 +19,7 @@ export interface ISubscription {
 	startTime?: number;
 	endTime?: number;
 	discountRules?: ISubscriptionDiscountRule[];
+    commissions?: ICommissionInfo[];
 }
 
 export interface ISubscriptionDiscountRule {
@@ -31,4 +32,10 @@ export interface ISubscriptionDiscountRule {
     discountPercentage?: number;
     fixedPrice?: number;
     discountApplication: number;
+}
+
+export interface ICommissionInfo {
+    chainId: number;
+    walletAddress: string;
+    share: string;
 }

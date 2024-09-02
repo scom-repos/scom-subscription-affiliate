@@ -11,12 +11,13 @@ import {
     Image,
     FormatUtils,
 } from '@ijstech/components';
-import { ISubscriptionAffiliate } from './interface';
+import { ICommissionInfo, ISubscriptionAffiliate } from './interface';
 import { imageStyle, preWrapStyle } from './index.css';
 import { checkIsLoggedIn, fetchCommunityInfo, getCommunityBasicInfoFromUri } from './utils';
 import { ICommunityInfo, MembershipType, PaymentModel, SocialDataManager } from '@scom/scom-social-sdk';
 import formSchema from './formSchema';
 import { SubscriptionModule } from './components';
+import { BigNumber } from '@ijstech/eth-wallet';
 
 
 interface ScomSubscriptionAffiliateElement extends ControlElement { }
@@ -48,6 +49,7 @@ export default class ScomSubscriptionAffiliate extends Module {
     private _dataManager: SocialDataManager;
     private communityInfo: ICommunityInfo;
     private copyTimer: any;
+    private commissions: ICommissionInfo[];
 
     get dataManager() {
         return this._dataManager || application.store?.mainDataManager;
@@ -128,6 +130,7 @@ export default class ScomSubscriptionAffiliate extends Module {
         this.pnlParentCommunity.visible = false;
         this.lblParentCommunity.caption = "";
         this.subscriptionModule.visible = false;
+        this.commissions = [];
     }
 
     private updateUI() {
@@ -147,6 +150,14 @@ export default class ScomSubscriptionAffiliate extends Module {
         const subscriptions = this.communityInfo.policies?.filter(policy => policy.paymentModel === PaymentModel.Subscription);
         if (subscriptions.length > 0) {
             const subscription = subscriptions[0];
+            const commissionRate = new BigNumber(subscription.commissionRate || 0);
+            this.commissions = this._data.walletAddress && commissionRate.gt(0) ? [
+                {
+                    chainId: subscription.chainId,
+                    walletAddress: this._data.walletAddress,
+                    share: commissionRate.div(100).toFixed()
+                }
+            ] : [];
             const isLoggedIn = checkIsLoggedIn();
             let isSubscribed = false;
             // if (isLoggedIn) {
@@ -164,7 +175,8 @@ export default class ScomSubscriptionAffiliate extends Module {
                     price: subscription.tokenAmount,
                     currency: subscription.currency,
                     durationInDays: subscription.durationInDays,
-                    discountRules: subscription.discountRules
+                    discountRules: subscription.discountRules,
+                    commissions: this.commissions
                 })
                 this.subscriptionModule.visible = true;
             }
@@ -189,8 +201,8 @@ export default class ScomSubscriptionAffiliate extends Module {
                 name: 'Builder Configurator',
                 target: 'Builders',
                 getActions: (category?: string) => {
-                  const actions = this.getActions();
-                  return actions;
+                    const actions = this.getActions();
+                    return actions;
                 },
                 getData: this.getData.bind(this),
                 setData: this.setData.bind(this),
@@ -198,16 +210,16 @@ export default class ScomSubscriptionAffiliate extends Module {
                 setTag: this.setTag.bind(this)
             },
             {
-              name: 'Editor',
-              target: 'Editor',
-              getActions: (category?: string) => {
-                const actions = this.getActions();
-                return actions;
-              },
-              getData: this.getData.bind(this),
-              setData: this.setData.bind(this),
-              getTag: this.getTag.bind(this),
-              setTag: this.setTag.bind(this)
+                name: 'Editor',
+                target: 'Editor',
+                getActions: (category?: string) => {
+                    const actions = this.getActions();
+                    return actions;
+                },
+                getData: this.getData.bind(this),
+                setData: this.setData.bind(this),
+                getTag: this.getTag.bind(this),
+                setTag: this.setTag.bind(this)
             }
         ];
     }

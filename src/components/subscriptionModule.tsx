@@ -116,7 +116,8 @@ export class SubscriptionModule extends Module {
             nftAddress: this._data.tokenAddress,
             erc1155Index: this._data.tokenId,
             recipient: walletAddress,
-            discountRuleId: discountRuleId
+            discountRuleId: discountRuleId,
+            commissions: this._data.commissions
         });
     }
 
