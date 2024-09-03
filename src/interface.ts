@@ -19,7 +19,7 @@ export interface ISubscription {
 	startTime?: number;
 	endTime?: number;
 	discountRules?: ISubscriptionDiscountRule[];
-    commissions?: ICommissionInfo[];
+    referrer?: string;
 }
 
 export interface ISubscriptionDiscountRule {

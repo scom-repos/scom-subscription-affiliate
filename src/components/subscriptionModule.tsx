@@ -117,7 +117,7 @@ export class SubscriptionModule extends Module {
             erc1155Index: this._data.tokenId,
             recipient: walletAddress,
             discountRuleId: discountRuleId,
-            commissions: this._data.commissions
+            referrer: this._data.referrer
         });
     }
 

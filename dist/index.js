@@ -235,7 +235,7 @@ define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["
                 erc1155Index: this._data.tokenId,
                 recipient: walletAddress,
                 discountRuleId: discountRuleId,
-                commissions: this._data.commissions
+                referrer: this._data.referrer
             });
         }
         init() {
@@ -303,7 +303,7 @@ define("@scom/scom-subscription-affiliate/components/index.ts", ["require", "exp
     Object.defineProperty(exports, "SubscriptionBundle", { enumerable: true, get: function () { return subscriptionBundle_2.SubscriptionBundle; } });
     Object.defineProperty(exports, "SubscriptionModule", { enumerable: true, get: function () { return subscriptionModule_1.SubscriptionModule; } });
 });
-define("@scom/scom-subscription-affiliate", ["require", "exports", "@ijstech/components", "@scom/scom-subscription-affiliate/index.css.ts", "@scom/scom-subscription-affiliate/utils/index.ts", "@scom/scom-social-sdk", "@scom/scom-subscription-affiliate/formSchema.ts", "@ijstech/eth-wallet"], function (require, exports, components_4, index_css_2, utils_2, scom_social_sdk_2, formSchema_1, eth_wallet_2) {
+define("@scom/scom-subscription-affiliate", ["require", "exports", "@ijstech/components", "@scom/scom-subscription-affiliate/index.css.ts", "@scom/scom-subscription-affiliate/utils/index.ts", "@scom/scom-social-sdk", "@scom/scom-subscription-affiliate/formSchema.ts"], function (require, exports, components_4, index_css_2, utils_2, scom_social_sdk_2, formSchema_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     const Theme = components_4.Styles.Theme.ThemeVars;
@@ -378,7 +378,6 @@ define("@scom/scom-subscription-affiliate", ["require", "exports", "@ijstech/com
             this.pnlParentCommunity.visible = false;
             this.lblParentCommunity.caption = "";
             this.subscriptionModule.visible = false;
-            this.commissions = [];
             this.lblName.link.href = '';
             this.lblName.link.target = '_blank';
         }
@@ -414,14 +413,6 @@ define("@scom/scom-subscription-affiliate", ["require", "exports", "@ijstech/com
             const subscriptions = this.communityInfo.policies?.filter(policy => policy.paymentModel === scom_social_sdk_2.PaymentModel.Subscription);
             if (subscriptions.length > 0) {
                 const subscription = subscriptions[0];
-                const commissionRate = new eth_wallet_2.BigNumber(subscription.commissionRate || 0);
-                this.commissions = this._data.walletAddress && commissionRate.gt(0) ? [
-                    {
-                        chainId: subscription.chainId,
-                        walletAddress: this._data.walletAddress,
-                        share: commissionRate.div(100).toFixed()
-                    }
-                ] : [];
                 const isLoggedIn = (0, utils_2.checkIsLoggedIn)();
                 let isSubscribed = false;
                 // if (isLoggedIn) {
@@ -441,7 +432,7 @@ define("@scom/scom-subscription-affiliate", ["require", "exports", "@ijstech/com
                         currency: subscription.currency,
                         durationInDays: subscription.durationInDays,
                         discountRules: subscription.discountRules,
-                        commissions: this.commissions
+                        referrer: this._data.walletAddress
                     });
                     this.subscriptionModule.visible = true;
                 }

@@ -20,7 +20,7 @@ declare module "@scom/scom-subscription-affiliate/interface.ts" {
         startTime?: number;
         endTime?: number;
         discountRules?: ISubscriptionDiscountRule[];
-        commissions?: ICommissionInfo[];
+        referrer?: string;
     }
     export interface ISubscriptionDiscountRule {
         id: number;
@@ -188,7 +188,6 @@ declare module "@scom/scom-subscription-affiliate" {
         private _dataManager;
         private communityInfo;
         private copyTimer;
-        private commissions;
         get dataManager(): SocialDataManager;
         set dataManager(manager: SocialDataManager);
         init(): void;
