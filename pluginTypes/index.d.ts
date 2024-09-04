@@ -59,7 +59,8 @@ declare module "@scom/scom-subscription-affiliate/formSchema.ts" {
         dataSchema: {
             type: string;
             properties: {
-                community: {
+                communityUri: {
+                    title: string;
                     type: string;
                     placeholder: string;
                     required: boolean;
@@ -210,7 +211,8 @@ declare module "@scom/scom-subscription-affiliate" {
                 userInputDataSchema: {
                     type: string;
                     properties: {
-                        community: {
+                        communityUri: {
+                            title: string;
                             type: string;
                             placeholder: string;
                             required: boolean;

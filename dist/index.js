@@ -76,7 +76,8 @@ define("@scom/scom-subscription-affiliate/formSchema.ts", ["require", "exports"]
         dataSchema: {
             type: "object",
             properties: {
-                community: {
+                communityUri: {
+                    title: 'Community',
                     type: "string",
                     placeholder: "Community Id/Creator's npub",
                     required: true
@@ -93,7 +94,7 @@ define("@scom/scom-subscription-affiliate/formSchema.ts", ["require", "exports"]
             elements: [
                 {
                     type: "Control",
-                    scope: "#/properties/community"
+                    scope: "#/properties/communityUri"
                 },
                 {
                     type: "Control",

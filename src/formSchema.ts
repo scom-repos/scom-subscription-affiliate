@@ -2,7 +2,8 @@ export default {
     dataSchema: {
         type: "object",
         properties: {
-            community: {
+            communityUri: {
+                title: 'Community',
                 type: "string",
                 placeholder: "Community Id/Creator's npub",
                 required: true
@@ -19,7 +20,7 @@ export default {
         elements: [
             {
                 type: "Control",
-                scope: "#/properties/community"
+                scope: "#/properties/communityUri"
             },
             {
                 type: "Control",
