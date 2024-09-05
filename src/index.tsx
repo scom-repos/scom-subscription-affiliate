@@ -238,7 +238,7 @@ export default class ScomSubscriptionAffiliate extends Module {
                         ></i-image>
                     </i-panel>
                 </i-panel>
-                <i-stack alignItems='center' justifyContent="space-between" margin={{ bottom: "0.25rem" }}>
+                <i-stack alignItems='center' justifyContent="space-between" margin={{ bottom: "0.5rem" }}>
                     <i-label id="lblName" font={{ size: '1.75rem', weight: 700 }} lineHeight="2.125rem" link={{ href: '#' }}></i-label>
                 </i-stack>
                 <i-stack direction="horizontal" justifyContent="space-between">

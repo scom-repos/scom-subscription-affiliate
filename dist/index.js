@@ -470,7 +470,7 @@ define("@scom/scom-subscription-affiliate", ["require", "exports", "@ijstech/com
                                 color: Theme.background.paper,
                             }, background: { color: Theme.background.paper }, overflow: 'hidden', width: '4.75rem', height: '4.75rem', position: 'absolute', top: '-3.375rem' },
                             this.$render("i-image", { id: 'imgAvatar', display: "block", width: "100%", height: "100%", objectFit: 'cover', border: { radius: '50%' }, background: { color: Theme.background.paper } }))),
-                    this.$render("i-stack", { alignItems: 'center', justifyContent: "space-between", margin: { bottom: "0.25rem" } },
+                    this.$render("i-stack", { alignItems: 'center', justifyContent: "space-between", margin: { bottom: "0.5rem" } },
                         this.$render("i-label", { id: "lblName", font: { size: '1.75rem', weight: 700 }, lineHeight: "2.125rem", link: { href: '#' } })),
                     this.$render("i-stack", { direction: "horizontal", justifyContent: "space-between" },
                         this.$render("i-label", { id: "lblDescription", class: index_css_2.preWrapStyle, font: { size: '0.9375rem' }, lineHeight: "1.25rem", lineClamp: 1 }))),
