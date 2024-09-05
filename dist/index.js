@@ -13,7 +13,7 @@ define("@scom/scom-subscription-affiliate/index.css.ts", ["require", "exports", 
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.preWrapStyle = exports.noWrapStyle = exports.imageStyle = void 0;
     exports.imageStyle = components_1.Styles.style({
-        transform: 'translateY(-40%)',
+        transform: 'translateY(-25%)',
         $nest: {
             '&>img': {
                 width: '100%',
@@ -374,10 +374,6 @@ define("@scom/scom-subscription-affiliate", ["require", "exports", "@ijstech/com
             this.pnlAvatar.visible = false;
             this.lblName.caption = "";
             this.lblDescription.caption = "";
-            this.lblPubkey.caption = "";
-            this.lblCommunityType.visible = false;
-            this.pnlParentCommunity.visible = false;
-            this.lblParentCommunity.caption = "";
             this.subscriptionModule.visible = false;
             this.lblName.link.href = '';
             this.lblName.link.target = '_blank';
@@ -403,40 +399,21 @@ define("@scom/scom-subscription-affiliate", ["require", "exports", "@ijstech/com
             this.lblName.link.href = communityUrl;
             this.lblName.link.target = communityUrl === window.location.origin ? '_self' : '_blank';
             this.lblDescription.caption = this.communityInfo.description;
-            this.lblPubkey.caption = components_4.FormatUtils.truncateWalletAddress(this.communityInfo.creatorId);
-            const isExclusive = this.communityInfo.membershipType === scom_social_sdk_2.MembershipType.Protected;
-            this.lblCommunityType.visible = isExclusive;
-            if (this.communityInfo.parentCommunityUri) {
-                const { communityId } = (0, utils_2.getCommunityBasicInfoFromUri)(this.communityInfo.parentCommunityUri);
-                this.pnlParentCommunity.visible = true;
-                this.lblParentCommunity.caption = communityId;
-            }
             const subscriptions = this.communityInfo.policies?.filter(policy => policy.paymentModel === scom_social_sdk_2.PaymentModel.Subscription);
             if (subscriptions.length > 0) {
                 const subscription = subscriptions[0];
-                const isLoggedIn = (0, utils_2.checkIsLoggedIn)();
-                let isSubscribed = false;
-                // if (isLoggedIn) {
-                //     const data = await checkUserSubscription(subscription.chainId, subscription.tokenAddress);
-                //     isSubscribed = data.isSubscribed;
-                // }
-                if (isSubscribed) {
-                    this.subscriptionModule.visible = false;
-                }
-                else {
-                    this.subscriptionModule.setData({
-                        chainId: subscription.chainId,
-                        tokenAddress: subscription.tokenAddress,
-                        tokenType: subscription.tokenType,
-                        tokenId: subscription.tokenId,
-                        price: subscription.tokenAmount,
-                        currency: subscription.currency,
-                        durationInDays: subscription.durationInDays,
-                        discountRules: subscription.discountRules,
-                        referrer: this._data.walletAddress
-                    });
-                    this.subscriptionModule.visible = true;
-                }
+                this.subscriptionModule.setData({
+                    chainId: subscription.chainId,
+                    tokenAddress: subscription.tokenAddress,
+                    tokenType: subscription.tokenType,
+                    tokenId: subscription.tokenId,
+                    price: subscription.tokenAmount,
+                    currency: subscription.currency,
+                    durationInDays: subscription.durationInDays,
+                    discountRules: subscription.discountRules,
+                    referrer: this._data.walletAddress
+                });
+                this.subscriptionModule.visible = true;
             }
             else {
                 this.subscriptionModule.visible = false;
@@ -479,64 +456,24 @@ define("@scom/scom-subscription-affiliate", ["require", "exports", "@ijstech/com
                 }
             ];
         }
-        async onCopyPubkey() {
-            try {
-                await components_4.application.copyToClipboard(this.communityInfo.creatorId);
-                this.imgCopy.name = "check";
-                this.imgCopy.fill = Theme.colors.success.main;
-                if (this.copyTimer)
-                    clearTimeout(this.copyTimer);
-                this.copyTimer = setTimeout(() => {
-                    this.imgCopy.name = "copy";
-                    this.imgCopy.fill = Theme.text.primary;
-                }, 500);
-            }
-            catch { }
-        }
-        viewParentCommunity() {
-            if (!this.communityInfo?.parentCommunityUri)
-                return;
-            const { creatorId, communityId } = (0, utils_2.getCommunityBasicInfoFromUri)(this.communityInfo.parentCommunityUri);
-            const ensMap = components_4.application.store?.ensMap || {};
-            const path = communityId + "/" + creatorId;
-            let url = `#!/c/${path}`;
-            for (let key in ensMap) {
-                if (ensMap[key] === path) {
-                    url = `#!/n/${key}`;
-                    break;
-                }
-            }
-            window.location.assign(url);
-        }
         render() {
             this.$render("i-panel", { background: { color: Theme.background.paper } },
-                this.$render("i-panel", { position: "relative", width: "100%", height: 0, overflow: "hidden", padding: { bottom: "40%" } },
-                    this.$render("i-image", { id: "imgBanner", class: index_css_2.imageStyle, position: "absolute", display: "block", width: "100%", height: "auto", top: "40%", left: 0, objectFit: "cover" })),
-                this.$render("i-stack", { direction: "vertical", position: "relative", padding: { top: '1.5rem', bottom: '1.25rem', left: '1rem', right: '1rem' } },
-                    this.$render("i-panel", { height: "0.75rem", width: "100%", position: "absolute", top: 0, left: 0, background: { color: `color-mix(in srgb, ${Theme.background.paper}, #fff 5%)` } }),
-                    this.$render("i-panel", { id: "pnlAvatar", padding: { bottom: "4rem" }, visible: false },
+                this.$render("i-panel", { position: "relative", width: "100%", height: 0, overflow: "hidden", padding: { bottom: "25%" } },
+                    this.$render("i-image", { id: "imgBanner", class: index_css_2.imageStyle, position: "absolute", display: "block", width: "100%", height: "auto", top: "25%", left: 0, objectFit: "cover" })),
+                this.$render("i-stack", { direction: "vertical", position: "relative", padding: { top: '1rem', bottom: '1rem', left: '1rem', right: '1rem' } },
+                    this.$render("i-panel", { height: "0.5rem", width: "100%", position: "absolute", top: 0, left: 0, background: { color: `color-mix(in srgb, ${Theme.background.paper}, #fff 5%)` } }),
+                    this.$render("i-panel", { id: "pnlAvatar", padding: { bottom: "1rem" }, visible: false },
                         this.$render("i-panel", { border: {
                                 radius: '50%',
                                 width: '0.25rem',
                                 style: 'solid',
                                 color: Theme.background.paper,
-                            }, background: { color: Theme.background.paper }, overflow: 'hidden', width: '8.875rem', height: '8.875rem', position: 'absolute', top: '-5.5rem' },
+                            }, background: { color: Theme.background.paper }, overflow: 'hidden', width: '4.75rem', height: '4.75rem', position: 'absolute', top: '-3.375rem' },
                             this.$render("i-image", { id: 'imgAvatar', display: "block", width: "100%", height: "100%", objectFit: 'cover', border: { radius: '50%' }, background: { color: Theme.background.paper } }))),
-                    this.$render("i-stack", { alignItems: 'center', justifyContent: "space-between", margin: { bottom: "0.5rem" } },
+                    this.$render("i-stack", { alignItems: 'center', justifyContent: "space-between", margin: { bottom: "0.25rem" } },
                         this.$render("i-label", { id: "lblName", font: { size: '1.75rem', weight: 700 }, lineHeight: "2.125rem", link: { href: '#' } })),
-                    this.$render("i-stack", { direction: "horizontal", alignItems: 'center', margin: { bottom: '0.5rem' }, gap: '0.5rem', cursor: 'pointer', opacity: 0.4, hover: { opacity: 1 }, onClick: this.onCopyPubkey },
-                        this.$render("i-label", { id: 'lblPubkey', font: {
-                                size: '0.875rem',
-                                weight: 400,
-                                color: Theme.text.primary,
-                            }, lineHeight: '1rem' }),
-                        this.$render("i-icon", { id: 'imgCopy', name: 'copy', width: '1rem', height: '1rem', display: 'inline-flex' })),
-                    this.$render("i-stack", { id: "pnlParentCommunity", direction: "horizontal", width: "fit-content", alignItems: "center", margin: { bottom: '0.5rem' }, gap: "0.5rem", cursor: "pointer", onClick: this.viewParentCommunity, visible: false },
-                        this.$render("i-icon", { width: "0.9375rem", height: "0.9375rem", name: "user-friends" }),
-                        this.$render("i-label", { id: "lblParentCommunity", font: { size: '0.9375rem' } })),
                     this.$render("i-stack", { direction: "horizontal", justifyContent: "space-between" },
-                        this.$render("i-label", { id: "lblDescription", class: index_css_2.preWrapStyle, font: { size: '0.9375rem' }, lineHeight: "1.25rem", lineClamp: 5, margin: { top: "0.25rem", bottom: "1rem" } })),
-                    this.$render("i-label", { id: "lblCommunityType", width: "fit-content", padding: { top: '0.25rem', bottom: '0.25rem', left: '0.5rem', right: '0.5rem' }, border: { width: '1px', style: 'solid', color: Theme.colors.primary.main, radius: '0.375rem' }, font: { size: '0.9375rem', color: Theme.colors.primary.main }, caption: "Exclusive Community", visible: false })),
+                        this.$render("i-label", { id: "lblDescription", class: index_css_2.preWrapStyle, font: { size: '0.9375rem' }, lineHeight: "1.25rem", lineClamp: 1 }))),
                 this.$render("i-scom-subscription-module", { id: "subscriptionModule", width: "100%", margin: { top: '0.5rem', bottom: '0.75rem' }, visible: false }));
         }
     };

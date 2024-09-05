@@ -1,7 +1,7 @@
 import { Styles } from "@ijstech/components";
 
 export const imageStyle = Styles.style({
-    transform: 'translateY(-40%)',
+    transform: 'translateY(-25%)',
     $nest: {
         '&>img': {
             width: '100%',

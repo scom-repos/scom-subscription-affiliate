@@ -38,12 +38,7 @@ export default class ScomSubscriptionAffiliate extends Module {
     private pnlAvatar: Panel;
     private imgAvatar: Image;
     private lblName: Label;
-    private lblPubkey: Label;
-    private imgCopy: Icon;
-    private pnlParentCommunity: StackLayout;
-    private lblParentCommunity: Label;
     private lblDescription: Label;
-    private lblCommunityType: Label;
     private subscriptionModule: SubscriptionModule;
     private _data: ISubscriptionAffiliate;
     private _dataManager: SocialDataManager;
@@ -124,10 +119,6 @@ export default class ScomSubscriptionAffiliate extends Module {
         this.pnlAvatar.visible = false;
         this.lblName.caption = "";
         this.lblDescription.caption = "";
-        this.lblPubkey.caption = "";
-        this.lblCommunityType.visible = false;
-        this.pnlParentCommunity.visible = false;
-        this.lblParentCommunity.caption = "";
         this.subscriptionModule.visible = false;
         this.lblName.link.href = '';
         this.lblName.link.target = '_blank';
@@ -155,39 +146,21 @@ export default class ScomSubscriptionAffiliate extends Module {
         this.lblName.link.href = communityUrl;
         this.lblName.link.target = communityUrl === window.location.origin ? '_self' : '_blank';
         this.lblDescription.caption = this.communityInfo.description;
-        this.lblPubkey.caption = FormatUtils.truncateWalletAddress(this.communityInfo.creatorId);
-        const isExclusive = this.communityInfo.membershipType === MembershipType.Protected;
-        this.lblCommunityType.visible = isExclusive;
-        if (this.communityInfo.parentCommunityUri) {
-            const { communityId } = getCommunityBasicInfoFromUri(this.communityInfo.parentCommunityUri);
-            this.pnlParentCommunity.visible = true;
-            this.lblParentCommunity.caption = communityId;
-        }
         const subscriptions = this.communityInfo.policies?.filter(policy => policy.paymentModel === PaymentModel.Subscription);
         if (subscriptions.length > 0) {
             const subscription = subscriptions[0];
-            const isLoggedIn = checkIsLoggedIn();
-            let isSubscribed = false;
-            // if (isLoggedIn) {
-            //     const data = await checkUserSubscription(subscription.chainId, subscription.tokenAddress);
-            //     isSubscribed = data.isSubscribed;
-            // }
-            if (isSubscribed) {
-                this.subscriptionModule.visible = false;
-            } else {
-                this.subscriptionModule.setData({
-                    chainId: subscription.chainId,
-                    tokenAddress: subscription.tokenAddress,
-                    tokenType: subscription.tokenType,
-                    tokenId: subscription.tokenId,
-                    price: subscription.tokenAmount,
-                    currency: subscription.currency,
-                    durationInDays: subscription.durationInDays,
-                    discountRules: subscription.discountRules,
-                    referrer: this._data.walletAddress
-                })
-                this.subscriptionModule.visible = true;
-            }
+            this.subscriptionModule.setData({
+                chainId: subscription.chainId,
+                tokenAddress: subscription.tokenAddress,
+                tokenType: subscription.tokenType,
+                tokenId: subscription.tokenId,
+                price: subscription.tokenAmount,
+                currency: subscription.currency,
+                durationInDays: subscription.durationInDays,
+                discountRules: subscription.discountRules,
+                referrer: this._data.walletAddress
+            })
+            this.subscriptionModule.visible = true;
         } else {
             this.subscriptionModule.visible = false;
         }
@@ -232,42 +205,14 @@ export default class ScomSubscriptionAffiliate extends Module {
         ];
     }
 
-    private async onCopyPubkey() {
-        try {
-            await application.copyToClipboard(this.communityInfo.creatorId);
-            this.imgCopy.name = "check";
-            this.imgCopy.fill = Theme.colors.success.main;
-            if (this.copyTimer) clearTimeout(this.copyTimer);
-            this.copyTimer = setTimeout(() => {
-                this.imgCopy.name = "copy";
-                this.imgCopy.fill = Theme.text.primary;
-            }, 500)
-        } catch { }
-    }
-
-    private viewParentCommunity() {
-        if (!this.communityInfo?.parentCommunityUri) return;
-        const { creatorId, communityId } = getCommunityBasicInfoFromUri(this.communityInfo.parentCommunityUri);
-        const ensMap = application.store?.ensMap || {};
-        const path = communityId + "/" + creatorId;
-        let url = `#!/c/${path}`;
-        for (let key in ensMap) {
-            if (ensMap[key] === path) {
-                url = `#!/n/${key}`;
-                break;
-            }
-        }
-        window.location.assign(url);
-    }
-
     render() {
         <i-panel background={{ color: Theme.background.paper }}>
-            <i-panel position="relative" width="100%" height={0} overflow="hidden" padding={{ bottom: "40%" }}>
-                <i-image id="imgBanner" class={imageStyle} position="absolute" display="block" width="100%" height="auto" top="40%" left={0} objectFit="cover"></i-image>
+            <i-panel position="relative" width="100%" height={0} overflow="hidden" padding={{ bottom: "25%" }}>
+                <i-image id="imgBanner" class={imageStyle} position="absolute" display="block" width="100%" height="auto" top="25%" left={0} objectFit="cover"></i-image>
             </i-panel>
-            <i-stack direction="vertical" position="relative" padding={{ top: '1.5rem', bottom: '1.25rem', left: '1rem', right: '1rem' }}>
-                <i-panel height="0.75rem" width="100%" position="absolute" top={0} left={0} background={{ color: `color-mix(in srgb, ${Theme.background.paper}, #fff 5%)` }} />
-                <i-panel id="pnlAvatar" padding={{ bottom: "4rem" }} visible={false}>
+            <i-stack direction="vertical" position="relative" padding={{ top: '1rem', bottom: '1rem', left: '1rem', right: '1rem' }}>
+                <i-panel height="0.5rem" width="100%" position="absolute" top={0} left={0} background={{ color: `color-mix(in srgb, ${Theme.background.paper}, #fff 5%)` }} />
+                <i-panel id="pnlAvatar" padding={{ bottom: "1rem" }} visible={false}>
                     <i-panel
                         border={{
                             radius: '50%',
@@ -277,10 +222,10 @@ export default class ScomSubscriptionAffiliate extends Module {
                         }}
                         background={{ color: Theme.background.paper }}
                         overflow='hidden'
-                        width={'8.875rem'}
-                        height={'8.875rem'}
+                        width={'4.75rem'}
+                        height={'4.75rem'}
                         position='absolute'
-                        top='-5.5rem'
+                        top='-3.375rem'
                     >
                         <i-image
                             id='imgAvatar'
@@ -293,62 +238,12 @@ export default class ScomSubscriptionAffiliate extends Module {
                         ></i-image>
                     </i-panel>
                 </i-panel>
-                <i-stack alignItems='center' justifyContent="space-between" margin={{ bottom: "0.5rem" }}>
+                <i-stack alignItems='center' justifyContent="space-between" margin={{ bottom: "0.25rem" }}>
                     <i-label id="lblName" font={{ size: '1.75rem', weight: 700 }} lineHeight="2.125rem" link={{ href: '#' }}></i-label>
                 </i-stack>
-                <i-stack
-                    direction="horizontal"
-                    alignItems='center'
-                    margin={{ bottom: '0.5rem' }}
-                    gap={'0.5rem'}
-                    cursor='pointer'
-                    opacity={0.4}
-                    hover={{ opacity: 1 }}
-                    onClick={this.onCopyPubkey}
-                >
-                    <i-label
-                        id='lblPubkey'
-                        font={{
-                            size: '0.875rem',
-                            weight: 400,
-                            color: Theme.text.primary,
-                        }}
-                        lineHeight={'1rem'}
-                    ></i-label>
-                    <i-icon
-                        id='imgCopy'
-                        name='copy'
-                        width={'1rem'}
-                        height={'1rem'}
-                        display='inline-flex'
-                    ></i-icon>
-                </i-stack>
-                <i-stack
-                    id="pnlParentCommunity"
-                    direction="horizontal"
-                    width="fit-content"
-                    alignItems="center"
-                    margin={{ bottom: '0.5rem' }}
-                    gap="0.5rem"
-                    cursor="pointer"
-                    onClick={this.viewParentCommunity}
-                    visible={false}
-                >
-                    <i-icon width="0.9375rem" height="0.9375rem" name="user-friends"></i-icon>
-                    <i-label id="lblParentCommunity" font={{ size: '0.9375rem' }}></i-label>
-                </i-stack>
                 <i-stack direction="horizontal" justifyContent="space-between">
-                    <i-label id="lblDescription" class={preWrapStyle} font={{ size: '0.9375rem' }} lineHeight="1.25rem" lineClamp={5} margin={{ top: "0.25rem", bottom: "1rem" }}></i-label>
+                    <i-label id="lblDescription" class={preWrapStyle} font={{ size: '0.9375rem' }} lineHeight="1.25rem" lineClamp={1}></i-label>
                 </i-stack>
-                <i-label
-                    id="lblCommunityType"
-                    width="fit-content"
-                    padding={{ top: '0.25rem', bottom: '0.25rem', left: '0.5rem', right: '0.5rem' }}
-                    border={{ width: '1px', style: 'solid', color: Theme.colors.primary.main, radius: '0.375rem' }}
-                    font={{ size: '0.9375rem', color: Theme.colors.primary.main }}
-                    caption="Exclusive Community"
-                    visible={false}
-                ></i-label>
             </i-stack>
             <i-scom-subscription-module
                 id="subscriptionModule"

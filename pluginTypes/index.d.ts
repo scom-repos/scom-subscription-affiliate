@@ -178,12 +178,7 @@ declare module "@scom/scom-subscription-affiliate" {
         private pnlAvatar;
         private imgAvatar;
         private lblName;
-        private lblPubkey;
-        private imgCopy;
-        private pnlParentCommunity;
-        private lblParentCommunity;
         private lblDescription;
-        private lblCommunityType;
         private subscriptionModule;
         private _data;
         private _dataManager;
@@ -237,8 +232,6 @@ declare module "@scom/scom-subscription-affiliate" {
             getTag: any;
             setTag: any;
         }[];
-        private onCopyPubkey;
-        private viewParentCommunity;
         render(): void;
     }
 }
