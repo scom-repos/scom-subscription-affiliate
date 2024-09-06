@@ -344,6 +344,8 @@ define("@scom/scom-subscription-affiliate", ["require", "exports", "@ijstech/com
             }
         }
         async setTag(value) {
+            if (!this.tag)
+                this.tag = {};
             const newValue = value || {};
             for (let prop in newValue) {
                 if (newValue.hasOwnProperty(prop)) {

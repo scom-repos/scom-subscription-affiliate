@@ -86,6 +86,7 @@ export default class ScomSubscriptionAffiliate extends Module {
     }
 
     private async setTag(value: any) {
+        if (!this.tag) this.tag = {};
         const newValue = value || {};
         for (let prop in newValue) {
             if (newValue.hasOwnProperty(prop)) {
