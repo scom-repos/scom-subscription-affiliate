@@ -213,6 +213,7 @@ define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["
                 closeOnBackdropClick: false,
             });
             await this.nftMinter.ready();
+            this.nftMinter.showLoading();
             await this._checkUserSubscription();
             const walletAddress = (0, utils_1.getNFTRecipientWalletAddress)();
             const builder = this.nftMinter.getConfigurators('customNft').find((conf) => conf.target === 'Builders');

@@ -93,6 +93,7 @@ export class SubscriptionModule extends Module {
             closeOnBackdropClick: false,
         });
         await this.nftMinter.ready();
+        this.nftMinter.showLoading();
         await this._checkUserSubscription();
         const walletAddress = getNFTRecipientWalletAddress();
         const builder = this.nftMinter.getConfigurators('customNft').find((conf: any) => conf.target === 'Builders');
