@@ -40,8 +40,6 @@ export class SubscriptionModule extends Module {
     private bundleWrapper: StackLayout;
     private iconCollapse: Icon;
     private pnlSubscriptionBundles: StackLayout;
-    private lblActiveOn: Label;
-    private lblValidUtil: Label;
     private _data: ISubscription;
     private nftMinter: ScomNftMinter;
     onSubscribed: onSubscribedCallback;
@@ -51,40 +49,29 @@ export class SubscriptionModule extends Module {
         this.updateUI();
     }
 
+    async checkUserSubscription(chainId: number, nftAddress: string): Promise<{ isSubscribed: boolean, startTime?: number, endTime?: number }> {
+        return { isSubscribed: false };
+    }
+
     private updateUI() {
         this.bundleWrapper.visible = false;
         this.pnlSubscriptionBundles.clearInnerHTML();
-        if (this._data.isSubscribed) {
-            this.lblValidUtil.caption = "Valid Until " + moment(this._data.endTime * 1000).format('MMM DD YYYY');
-            this.lblValidUtil.visible = true;
-            this.lblActiveOn.visible = false;
-            this.pnlOffer.visible = false;
-        } else {
-            this.lblValidUtil.visible = false;
-            if (this._data.startTime) {
-                this.lblActiveOn.caption = "Active on " + moment(this._data.startTime * 1000).format('MMM DD YYYY');
-            }
-            this.lblActiveOn.visible = this._data.startTime > 0;
-            this.pnlOffer.visible = true;
-            const dayText = this._data.durationInDays > 1 ? `for ${this._data.durationInDays} days` : 'per day';
-            const address = this._data.currency === Utils.nullAddress ? undefined : this._data.currency;
-            let token = tokenStore.getTokenList(this._data.chainId).find(v => v.address === address);
-            this.lblOfferPrice.caption = `${this._data.price} ${token?.symbol || ""} ${dayText}`;
-            this.renderSubscriptionBundles(token?.symbol || '');
-        }
+        this.pnlOffer.visible = true;
+        const dayText = this._data.durationInDays > 1 ? `for ${this._data.durationInDays} days` : 'per day';
+        const address = this._data.currency === Utils.nullAddress ? undefined : this._data.currency;
+        let token = tokenStore.getTokenList(this._data.chainId).find(v => v.address === address);
+        this.lblOfferPrice.caption = `${this._data.price} ${token?.symbol || ""} ${dayText}`;
+        this.renderSubscriptionBundles(token?.symbol || '');
     }
 
     private handleSubscribeButtonClick() {
-        if (!this._data.isSubscribed)
-            this.openNFTMinter();
+        this.openNFTMinter();
     }
-
-    async checkUserSubscription() {
-        // const subscriptionInfo = await checkUserSubscription(this._data.chainId, this._data.tokenAddress);
-        // this._data.isSubscribed = subscriptionInfo.isSubscribed;
-        // this._data.startTime = subscriptionInfo.startTime;
-        // this._data.endTime = subscriptionInfo.endTime;
-        this.updateUI();
+    
+    async _checkUserSubscription() {
+        const subscriptionInfo = await this.checkUserSubscription(this._data.chainId, this._data.tokenAddress);
+        this.nftMinter.isRenewal = subscriptionInfo.isSubscribed;
+        if (subscriptionInfo.isSubscribed) this.nftMinter.renewalDate = subscriptionInfo.endTime;
     }
 
     private async openNFTMinter(discountRuleId?: number) {
@@ -95,7 +82,6 @@ export class SubscriptionModule extends Module {
         }
         this.nftMinter.onMintedNFT = async () => {
             this.nftMinter.closeModal();
-            // this.checkUserSubscription();
             if (this.onSubscribed) this.onSubscribed();
         }
         this.nftMinter.openModal({
@@ -107,7 +93,8 @@ export class SubscriptionModule extends Module {
             closeOnBackdropClick: false,
         });
         await this.nftMinter.ready();
-        const walletAddress = await getNFTRecipientWalletAddress();
+        await this._checkUserSubscription();
+        const walletAddress = getNFTRecipientWalletAddress();
         const builder = this.nftMinter.getConfigurators('customNft').find((conf: any) => conf.target === 'Builders');
         builder.setData({
             productType: 'Subscription',
@@ -128,8 +115,7 @@ export class SubscriptionModule extends Module {
     }
 
     private onSubscribeBundle(subscription: ISubscriptionDiscountRule) {
-        if (!this._data.isSubscribed)
-            this.openNFTMinter(subscription.id);
+        this.openNFTMinter(subscription.id);
     }
 
     private onCollapse() {
@@ -208,15 +194,6 @@ export class SubscriptionModule extends Module {
                                     lineHeight={1.5}
                                 />
                             </i-stack>
-                            <i-label
-                                id="lblActiveOn"
-                                width="100%"
-                                padding={{ top: '0.75rem' }}
-                                font={{ size: '0.875rem', color: Theme.text.secondary }}
-                                lineHeight={1.5}
-                                overflowWrap="break-word"
-                                visible={false}
-                            />
                         </i-panel>
                         <i-stack
                             id="bundleWrapper"
@@ -262,15 +239,6 @@ export class SubscriptionModule extends Module {
                             />
                         </i-stack>
                     </i-panel>
-                    <i-label
-                        id="lblValidUtil"
-                        width="100%"
-                        padding={{ left: '0.75rem', right: '0.75rem' }}
-                        font={{ size: '0.875rem', color: Theme.text.secondary }}
-                        lineHeight={1.5}
-                        overflowWrap="break-word"
-                        visible={false}
-                    />
                 </i-stack>
             </i-stack>
         )

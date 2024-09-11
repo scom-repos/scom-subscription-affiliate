@@ -171,39 +171,27 @@ define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["
             this._data = data;
             this.updateUI();
         }
+        async checkUserSubscription(chainId, nftAddress) {
+            return { isSubscribed: false };
+        }
         updateUI() {
             this.bundleWrapper.visible = false;
             this.pnlSubscriptionBundles.clearInnerHTML();
-            if (this._data.isSubscribed) {
-                this.lblValidUtil.caption = "Valid Until " + (0, components_3.moment)(this._data.endTime * 1000).format('MMM DD YYYY');
-                this.lblValidUtil.visible = true;
-                this.lblActiveOn.visible = false;
-                this.pnlOffer.visible = false;
-            }
-            else {
-                this.lblValidUtil.visible = false;
-                if (this._data.startTime) {
-                    this.lblActiveOn.caption = "Active on " + (0, components_3.moment)(this._data.startTime * 1000).format('MMM DD YYYY');
-                }
-                this.lblActiveOn.visible = this._data.startTime > 0;
-                this.pnlOffer.visible = true;
-                const dayText = this._data.durationInDays > 1 ? `for ${this._data.durationInDays} days` : 'per day';
-                const address = this._data.currency === eth_wallet_1.Utils.nullAddress ? undefined : this._data.currency;
-                let token = scom_token_list_1.tokenStore.getTokenList(this._data.chainId).find(v => v.address === address);
-                this.lblOfferPrice.caption = `${this._data.price} ${token?.symbol || ""} ${dayText}`;
-                this.renderSubscriptionBundles(token?.symbol || '');
-            }
+            this.pnlOffer.visible = true;
+            const dayText = this._data.durationInDays > 1 ? `for ${this._data.durationInDays} days` : 'per day';
+            const address = this._data.currency === eth_wallet_1.Utils.nullAddress ? undefined : this._data.currency;
+            let token = scom_token_list_1.tokenStore.getTokenList(this._data.chainId).find(v => v.address === address);
+            this.lblOfferPrice.caption = `${this._data.price} ${token?.symbol || ""} ${dayText}`;
+            this.renderSubscriptionBundles(token?.symbol || '');
         }
         handleSubscribeButtonClick() {
-            if (!this._data.isSubscribed)
-                this.openNFTMinter();
+            this.openNFTMinter();
         }
-        async checkUserSubscription() {
-            // const subscriptionInfo = await checkUserSubscription(this._data.chainId, this._data.tokenAddress);
-            // this._data.isSubscribed = subscriptionInfo.isSubscribed;
-            // this._data.startTime = subscriptionInfo.startTime;
-            // this._data.endTime = subscriptionInfo.endTime;
-            this.updateUI();
+        async _checkUserSubscription() {
+            const subscriptionInfo = await this.checkUserSubscription(this._data.chainId, this._data.tokenAddress);
+            this.nftMinter.isRenewal = subscriptionInfo.isSubscribed;
+            if (subscriptionInfo.isSubscribed)
+                this.nftMinter.renewalDate = subscriptionInfo.endTime;
         }
         async openNFTMinter(discountRuleId) {
             if (!this.nftMinter) {
@@ -213,7 +201,6 @@ define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["
             }
             this.nftMinter.onMintedNFT = async () => {
                 this.nftMinter.closeModal();
-                // this.checkUserSubscription();
                 if (this.onSubscribed)
                     this.onSubscribed();
             };
@@ -226,7 +213,8 @@ define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["
                 closeOnBackdropClick: false,
             });
             await this.nftMinter.ready();
-            const walletAddress = await (0, utils_1.getNFTRecipientWalletAddress)();
+            await this._checkUserSubscription();
+            const walletAddress = (0, utils_1.getNFTRecipientWalletAddress)();
             const builder = this.nftMinter.getConfigurators('customNft').find((conf) => conf.target === 'Builders');
             builder.setData({
                 productType: 'Subscription',
@@ -245,8 +233,7 @@ define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["
             this.onSubscribeBundle = this.onSubscribeBundle.bind(this);
         }
         onSubscribeBundle(subscription) {
-            if (!this._data.isSubscribed)
-                this.openNFTMinter(subscription.id);
+            this.openNFTMinter(subscription.id);
         }
         onCollapse() {
             this.pnlSubscriptionBundles.visible = !this.pnlSubscriptionBundles.visible;
@@ -282,14 +269,12 @@ define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["
                         this.$render("i-panel", { padding: { left: '0.75rem', right: '0.75rem' } },
                             this.$render("i-stack", { gap: "1rem", direction: "horizontal", alignItems: "center", justifyContent: "space-between", minHeight: 36, width: "100%", padding: { top: '0.5rem', bottom: '0.5rem', left: '0.5rem', right: '0.5rem' }, border: { radius: 18 }, background: { color: Theme.colors.primary.main }, stack: { grow: '1', shrink: '1', basis: '0' }, cursor: "pointer", onClick: this.handleSubscribeButtonClick },
                                 this.$render("i-label", { class: "text-center", font: { size: '0.875rem', weight: 600, color: Theme.colors.primary.contrastText, transform: 'uppercase' }, lineHeight: 1.5, caption: "Subscribe" }),
-                                this.$render("i-label", { id: "lblOfferPrice", class: "text-center", font: { size: '0.875rem', weight: 600, color: Theme.colors.primary.contrastText }, lineHeight: 1.5 })),
-                            this.$render("i-label", { id: "lblActiveOn", width: "100%", padding: { top: '0.75rem' }, font: { size: '0.875rem', color: Theme.text.secondary }, lineHeight: 1.5, overflowWrap: "break-word", visible: false })),
+                                this.$render("i-label", { id: "lblOfferPrice", class: "text-center", font: { size: '0.875rem', weight: 600, color: Theme.colors.primary.contrastText }, lineHeight: 1.5 }))),
                         this.$render("i-stack", { id: "bundleWrapper", visible: false, gap: "0.5rem", direction: "vertical", alignItems: "center", justifyContent: "space-between", width: "100%", margin: { top: '1rem' }, border: { top: { width: 1, style: 'solid', color: Theme.divider } } },
                             this.$render("i-stack", { gap: "1rem", direction: "horizontal", alignItems: "center", justifyContent: "space-between", width: "100%", padding: { top: '0.75rem', bottom: '0.75rem', left: '0.75rem', right: '0.75rem' }, cursor: "pointer", hover: { backgroundColor: Theme.action.hoverBackground }, onClick: this.onCollapse },
                                 this.$render("i-label", { caption: "Subscription Bundles", font: { size: '1rem', weight: 600, color: Theme.text.secondary, transform: 'uppercase' } }),
                                 this.$render("i-icon", { id: "iconCollapse", name: "angle-up", width: 20, height: 20, fill: Theme.text.secondary })),
-                            this.$render("i-stack", { id: "pnlSubscriptionBundles", gap: "1rem", width: "100%", direction: "vertical", alignItems: "center", padding: { left: '0.75rem', right: '0.75rem' } }))),
-                    this.$render("i-label", { id: "lblValidUtil", width: "100%", padding: { left: '0.75rem', right: '0.75rem' }, font: { size: '0.875rem', color: Theme.text.secondary }, lineHeight: 1.5, overflowWrap: "break-word", visible: false }))));
+                            this.$render("i-stack", { id: "pnlSubscriptionBundles", gap: "1rem", width: "100%", direction: "vertical", alignItems: "center", padding: { left: '0.75rem', right: '0.75rem' } }))))));
         }
     };
     SubscriptionModule = __decorate([
@@ -317,6 +302,13 @@ define("@scom/scom-subscription-affiliate", ["require", "exports", "@ijstech/com
         }
         init() {
             super.init();
+            this.subscriptionModule.checkUserSubscription = this.handleCheckUserSubscription.bind(this);
+        }
+        async handleCheckUserSubscription(chainId, nftAddress) {
+            if (this.checkUserSubscription) {
+                return await this.checkUserSubscription(chainId, nftAddress);
+            }
+            return { isSubscribed: false };
         }
         async setData(data) {
             this._data = data;

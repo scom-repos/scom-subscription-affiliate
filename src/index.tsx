@@ -3,21 +3,17 @@ import {
     customElements,
     Styles,
     ControlElement,
-    StackLayout,
     Label,
     Panel,
-    Icon,
     application,
     Image,
-    FormatUtils,
 } from '@ijstech/components';
-import { ICommissionInfo, ISubscriptionAffiliate } from './interface';
+import { ISubscriptionAffiliate } from './interface';
 import { imageStyle, preWrapStyle } from './index.css';
-import { checkIsLoggedIn, fetchCommunityInfo, getCommunityBasicInfoFromUri } from './utils';
-import { ICommunityInfo, MembershipType, PaymentModel, SocialDataManager } from '@scom/scom-social-sdk';
+import { fetchCommunityInfo } from './utils';
+import { ICommunityInfo, PaymentModel, SocialDataManager } from '@scom/scom-social-sdk';
 import formSchema from './formSchema';
 import { SubscriptionModule } from './components';
-import { BigNumber } from '@ijstech/eth-wallet';
 
 
 interface ScomSubscriptionAffiliateElement extends ControlElement { }
@@ -43,7 +39,7 @@ export default class ScomSubscriptionAffiliate extends Module {
     private _data: ISubscriptionAffiliate;
     private _dataManager: SocialDataManager;
     private communityInfo: ICommunityInfo;
-    private copyTimer: any;
+    checkUserSubscription: (chainId: number, nftAddress: string) => Promise<{ isSubscribed: boolean, startTime?: number, endTime?: number }>;
 
     get dataManager() {
         return this._dataManager || application.store?.mainDataManager;
@@ -55,6 +51,14 @@ export default class ScomSubscriptionAffiliate extends Module {
 
     init() {
         super.init();
+        this.subscriptionModule.checkUserSubscription = this.handleCheckUserSubscription.bind(this);
+    }
+
+    async handleCheckUserSubscription(chainId: number, nftAddress: string): Promise<{ isSubscribed: boolean, startTime?: number, endTime?: number }> {
+        if (this.checkUserSubscription) {
+            return await this.checkUserSubscription(chainId, nftAddress);
+        }
+        return { isSubscribed: false };
     }
 
     private async setData(data: ISubscriptionAffiliate) {

@@ -15,9 +15,6 @@ export interface ISubscription {
 	price?: string;
 	currency?: string;
 	durationInDays?: number;
-	isSubscribed?: boolean;
-	startTime?: number;
-	endTime?: number;
 	discountRules?: ISubscriptionDiscountRule[];
     referrer?: string;
 }

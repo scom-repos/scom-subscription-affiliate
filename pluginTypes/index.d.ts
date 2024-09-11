@@ -16,9 +16,6 @@ declare module "@scom/scom-subscription-affiliate/interface.ts" {
         price?: string;
         currency?: string;
         durationInDays?: number;
-        isSubscribed?: boolean;
-        startTime?: number;
-        endTime?: number;
         discountRules?: ISubscriptionDiscountRule[];
         referrer?: string;
     }
@@ -138,15 +135,18 @@ declare module "@scom/scom-subscription-affiliate/components/subscriptionModule.
         private bundleWrapper;
         private iconCollapse;
         private pnlSubscriptionBundles;
-        private lblActiveOn;
-        private lblValidUtil;
         private _data;
         private nftMinter;
         onSubscribed: onSubscribedCallback;
         setData(data: ISubscription): void;
+        checkUserSubscription(chainId: number, nftAddress: string): Promise<{
+            isSubscribed: boolean;
+            startTime?: number;
+            endTime?: number;
+        }>;
         private updateUI;
         private handleSubscribeButtonClick;
-        checkUserSubscription(): Promise<void>;
+        _checkUserSubscription(): Promise<void>;
         private openNFTMinter;
         init(): void;
         private onSubscribeBundle;
@@ -183,10 +183,19 @@ declare module "@scom/scom-subscription-affiliate" {
         private _data;
         private _dataManager;
         private communityInfo;
-        private copyTimer;
+        checkUserSubscription: (chainId: number, nftAddress: string) => Promise<{
+            isSubscribed: boolean;
+            startTime?: number;
+            endTime?: number;
+        }>;
         get dataManager(): SocialDataManager;
         set dataManager(manager: SocialDataManager);
         init(): void;
+        handleCheckUserSubscription(chainId: number, nftAddress: string): Promise<{
+            isSubscribed: boolean;
+            startTime?: number;
+            endTime?: number;
+        }>;
         private setData;
         private getData;
         private getTag;
