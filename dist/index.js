@@ -394,7 +394,9 @@ define("@scom/scom-subscription-affiliate", ["require", "exports", "@ijstech/com
             this.lblName.link.href = communityUrl;
             this.lblName.link.target = communityUrl === window.location.origin ? '_self' : '_blank';
             this.lblDescription.caption = this.communityInfo.description;
-            const subscriptions = this.communityInfo.policies?.filter(policy => policy.paymentModel === scom_social_sdk_2.PaymentModel.Subscription);
+            const telegram = window['Telegram'];
+            const subscriptions = this.communityInfo.policies?.filter(policy => policy.paymentModel === scom_social_sdk_2.PaymentModel.Subscription &&
+                (telegram ? !policy.chainId : policy.chainId)) || [];
             if (subscriptions.length > 0) {
                 const subscription = subscriptions[0];
                 this.subscriptionModule.setData({

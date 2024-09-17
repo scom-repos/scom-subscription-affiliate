@@ -151,7 +151,11 @@ export default class ScomSubscriptionAffiliate extends Module {
         this.lblName.link.href = communityUrl;
         this.lblName.link.target = communityUrl === window.location.origin ? '_self' : '_blank';
         this.lblDescription.caption = this.communityInfo.description;
-        const subscriptions = this.communityInfo.policies?.filter(policy => policy.paymentModel === PaymentModel.Subscription);
+        const telegram = window['Telegram'];
+        const subscriptions = this.communityInfo.policies?.filter(policy =>
+            policy.paymentModel === PaymentModel.Subscription &&
+            (telegram ? !policy.chainId : policy.chainId)
+        ) || [];
         if (subscriptions.length > 0) {
             const subscription = subscriptions[0];
             this.subscriptionModule.setData({
