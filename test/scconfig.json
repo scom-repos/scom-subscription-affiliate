@@ -12,6 +12,7 @@
         "@ijstech/eth-wallet": "*",
         "@scom/scom-subscription-affiliate": "*",
         "@scom/scom-nft-minter": "*",
+        "@scom/scom-ton-subscription": "*",
         "@scom/scom-social-sdk": "*",
         "@scom/scom-token-list": "*"
     },

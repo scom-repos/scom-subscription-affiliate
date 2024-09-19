@@ -1,4 +1,4 @@
-import { TokenType } from "@scom/scom-social-sdk";
+import { IProtectedMembershipPolicy, TokenType } from "@scom/scom-social-sdk";
 
 export interface ISubscriptionAffiliate {
     communityUri?: string;
@@ -17,6 +17,7 @@ export interface ISubscription {
 	durationInDays?: number;
 	discountRules?: ISubscriptionDiscountRule[];
     referrer?: string;
+	policy?: IProtectedMembershipPolicy;
 }
 
 export interface ISubscriptionDiscountRule {

@@ -167,7 +167,8 @@ export default class ScomSubscriptionAffiliate extends Module {
                 currency: subscription.currency,
                 durationInDays: subscription.durationInDays,
                 discountRules: subscription.discountRules,
-                referrer: this._data.walletAddress
+                referrer: this._data.walletAddress,
+                policy: subscription
             })
             this.subscriptionModule.visible = true;
         } else {

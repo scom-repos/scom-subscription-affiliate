@@ -161,7 +161,7 @@ define("@scom/scom-subscription-affiliate/components/subscriptionBundle.tsx", ["
     ], SubscriptionBundle);
     exports.SubscriptionBundle = SubscriptionBundle;
 });
-define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["require", "exports", "@ijstech/components", "@ijstech/eth-wallet", "@scom/scom-token-list", "@scom/scom-nft-minter", "@scom/scom-subscription-affiliate/components/subscriptionBundle.tsx", "@scom/scom-subscription-affiliate/utils/index.ts"], function (require, exports, components_3, eth_wallet_1, scom_token_list_1, scom_nft_minter_1, subscriptionBundle_1, utils_1) {
+define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["require", "exports", "@ijstech/components", "@ijstech/eth-wallet", "@scom/scom-token-list", "@scom/scom-nft-minter", "@scom/scom-ton-subscription", "@scom/scom-subscription-affiliate/components/subscriptionBundle.tsx", "@scom/scom-subscription-affiliate/utils/index.ts"], function (require, exports, components_3, eth_wallet_1, scom_token_list_1, scom_nft_minter_1, scom_ton_subscription_1, subscriptionBundle_1, utils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.SubscriptionModule = void 0;
@@ -181,6 +181,15 @@ define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["
             const dayText = this._data.durationInDays > 1 ? `for ${this._data.durationInDays} days` : 'per day';
             const address = this._data.currency === eth_wallet_1.Utils.nullAddress ? undefined : this._data.currency;
             let token = scom_token_list_1.tokenStore.getTokenList(this._data.chainId).find(v => v.address === address);
+            const telegram = window['Telegram'];
+            if (!token && telegram) {
+                token = {
+                    chainId: undefined,
+                    name: "Toncoin",
+                    decimals: 18,
+                    symbol: "TON",
+                };
+            }
             this.lblOfferPrice.caption = `${this._data.price} ${token?.symbol || ""} ${dayText}`;
             this.renderSubscriptionBundles(token?.symbol || '');
         }
@@ -195,7 +204,8 @@ define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["
         }
         async openNFTMinter(discountRuleId) {
             if (!this.nftMinter) {
-                this.nftMinter = new scom_nft_minter_1.default();
+                const telegram = window['Telegram'];
+                this.nftMinter = telegram ? new scom_ton_subscription_1.default() : new scom_nft_minter_1.default();
                 this.nftMinter.display = 'block';
                 this.nftMinter.margin = { top: '1rem' };
             }
@@ -205,7 +215,7 @@ define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["
                     this.onSubscribed();
             };
             this.nftMinter.openModal({
-                title: 'Mint NFT to unlock content',
+                title: this.nftMinter instanceof scom_nft_minter_1.default ? 'Mint NFT to unlock content' : 'Subscribe',
                 width: '38rem',
                 zIndex: 200,
                 popupPlacement: 'top',
@@ -215,18 +225,27 @@ define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["
             await this.nftMinter.ready();
             this.nftMinter.showLoading();
             await this._checkUserSubscription();
-            const walletAddress = (0, utils_1.getNFTRecipientWalletAddress)();
-            const builder = this.nftMinter.getConfigurators('customNft').find((conf) => conf.target === 'Builders');
-            builder.setData({
-                productType: 'Subscription',
-                nftType: this._data.tokenType,
-                chainId: this._data.chainId,
-                nftAddress: this._data.tokenAddress,
-                erc1155Index: this._data.tokenId,
-                recipient: walletAddress,
-                discountRuleId: discountRuleId,
-                referrer: this._data.referrer
-            });
+            if (this.nftMinter instanceof scom_nft_minter_1.default) {
+                const walletAddress = (0, utils_1.getNFTRecipientWalletAddress)();
+                const builder = this.nftMinter.getConfigurators('customNft').find((conf) => conf.target === 'Builders');
+                builder.setData({
+                    productType: 'Subscription',
+                    nftType: this._data.tokenType,
+                    chainId: this._data.chainId,
+                    nftAddress: this._data.tokenAddress,
+                    erc1155Index: this._data.tokenId,
+                    recipient: walletAddress,
+                    discountRuleId: discountRuleId,
+                    referrer: this._data.referrer
+                });
+            }
+            else {
+                const builder = this.nftMinter.getConfigurators().find((conf) => conf.target === 'Builders');
+                builder.setData({
+                    ...this._data.policy,
+                    discountRuleId: discountRuleId
+                });
+            }
         }
         init() {
             super.init();
@@ -408,7 +427,8 @@ define("@scom/scom-subscription-affiliate", ["require", "exports", "@ijstech/com
                     currency: subscription.currency,
                     durationInDays: subscription.durationInDays,
                     discountRules: subscription.discountRules,
-                    referrer: this._data.walletAddress
+                    referrer: this._data.walletAddress,
+                    policy: subscription
                 });
                 this.subscriptionModule.visible = true;
             }

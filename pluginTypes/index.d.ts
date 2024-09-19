@@ -1,7 +1,7 @@
 /// <reference path="@scom/scom-social-sdk/index.d.ts" />
 /// <amd-module name="@scom/scom-subscription-affiliate/interface.ts" />
 declare module "@scom/scom-subscription-affiliate/interface.ts" {
-    import { TokenType } from "@scom/scom-social-sdk";
+    import { IProtectedMembershipPolicy, TokenType } from "@scom/scom-social-sdk";
     export interface ISubscriptionAffiliate {
         communityUri?: string;
         creatorId?: string;
@@ -18,6 +18,7 @@ declare module "@scom/scom-subscription-affiliate/interface.ts" {
         durationInDays?: number;
         discountRules?: ISubscriptionDiscountRule[];
         referrer?: string;
+        policy?: IProtectedMembershipPolicy;
     }
     export interface ISubscriptionDiscountRule {
         id: number;

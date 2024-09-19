@@ -21,6 +21,7 @@
         "@scom/scom-token-modal",
         "@scom/scom-token-input",
         "@scom/scom-wallet-modal",
-        "@scom/scom-nft-minter"
+        "@scom/scom-nft-minter",
+        "@scom/scom-ton-subscription"
     ]
 }

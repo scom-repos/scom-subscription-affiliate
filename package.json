@@ -13,7 +13,8 @@
         "@ijstech/eth-wallet": "^0.1.51",
         "@ijstech/eth-contract": "^0.1.10",
         "@scom/scom-social-sdk": "^0.1.60",
-        "@scom/scom-nft-minter": "^0.1.22"
+        "@scom/scom-nft-minter": "^0.1.22",
+        "@scom/scom-ton-subscription": "https://github.com/scom-repos/scom-ton-subscription.git"
     },
     "devDependencies": {
         "@ijstech/cli": "^0.1.26",

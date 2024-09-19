@@ -12,7 +12,8 @@ import {
 import { Utils } from '@ijstech/eth-wallet';
 import { tokenStore } from '@scom/scom-token-list';
 import ScomNftMinter from '@scom/scom-nft-minter';
-import { ISubscriptionDiscountRule } from '@scom/scom-social-sdk';
+import ScomTonSubscription from '@scom/scom-ton-subscription';
+import { ISubscriptionDiscountRule, PaymentModel } from '@scom/scom-social-sdk';
 import { SubscriptionBundle } from './subscriptionBundle';
 import { ISubscription } from '../interface';
 import { getNFTRecipientWalletAddress } from '../utils';
@@ -41,7 +42,7 @@ export class SubscriptionModule extends Module {
     private iconCollapse: Icon;
     private pnlSubscriptionBundles: StackLayout;
     private _data: ISubscription;
-    private nftMinter: ScomNftMinter;
+    private nftMinter: ScomNftMinter | ScomTonSubscription;
     onSubscribed: onSubscribedCallback;
 
     setData(data: ISubscription) {
@@ -60,6 +61,15 @@ export class SubscriptionModule extends Module {
         const dayText = this._data.durationInDays > 1 ? `for ${this._data.durationInDays} days` : 'per day';
         const address = this._data.currency === Utils.nullAddress ? undefined : this._data.currency;
         let token = tokenStore.getTokenList(this._data.chainId).find(v => v.address === address);
+        const telegram = window['Telegram'];
+        if (!token && telegram) {
+            token = {
+                chainId: undefined,
+                name: "Toncoin",
+                decimals: 18,
+                symbol: "TON",
+            };
+        }
         this.lblOfferPrice.caption = `${this._data.price} ${token?.symbol || ""} ${dayText}`;
         this.renderSubscriptionBundles(token?.symbol || '');
     }
@@ -76,7 +86,8 @@ export class SubscriptionModule extends Module {
 
     private async openNFTMinter(discountRuleId?: number) {
         if (!this.nftMinter) {
-            this.nftMinter = new ScomNftMinter();
+            const telegram = window['Telegram'];
+            this.nftMinter = telegram ? new ScomTonSubscription() : new ScomNftMinter();
             this.nftMinter.display = 'block';
             this.nftMinter.margin = { top: '1rem' };
         }
@@ -85,7 +96,7 @@ export class SubscriptionModule extends Module {
             if (this.onSubscribed) this.onSubscribed();
         }
         this.nftMinter.openModal({
-            title: 'Mint NFT to unlock content',
+            title: this.nftMinter instanceof ScomNftMinter ? 'Mint NFT to unlock content' : 'Subscribe',
             width: '38rem',
             zIndex: 200,
             popupPlacement: 'top',
@@ -95,18 +106,26 @@ export class SubscriptionModule extends Module {
         await this.nftMinter.ready();
         this.nftMinter.showLoading();
         await this._checkUserSubscription();
-        const walletAddress = getNFTRecipientWalletAddress();
-        const builder = this.nftMinter.getConfigurators('customNft').find((conf: any) => conf.target === 'Builders');
-        builder.setData({
-            productType: 'Subscription',
-            nftType: this._data.tokenType,
-            chainId: this._data.chainId,
-            nftAddress: this._data.tokenAddress,
-            erc1155Index: this._data.tokenId,
-            recipient: walletAddress,
-            discountRuleId: discountRuleId,
-            referrer: this._data.referrer
-        });
+        if (this.nftMinter instanceof ScomNftMinter) {
+            const walletAddress = getNFTRecipientWalletAddress();
+            const builder = this.nftMinter.getConfigurators('customNft').find((conf: any) => conf.target === 'Builders');
+            builder.setData({
+                productType: 'Subscription',
+                nftType: this._data.tokenType,
+                chainId: this._data.chainId,
+                nftAddress: this._data.tokenAddress,
+                erc1155Index: this._data.tokenId,
+                recipient: walletAddress,
+                discountRuleId: discountRuleId,
+                referrer: this._data.referrer
+            });
+        } else {
+            const builder = this.nftMinter.getConfigurators().find((conf: any) => conf.target === 'Builders');
+            builder.setData({
+                ...this._data.policy,
+                discountRuleId: discountRuleId
+            });
+        }
     }
 
     init() {
