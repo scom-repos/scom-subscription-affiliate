@@ -80,9 +80,13 @@ export class SubscriptionModule extends Module {
     }
     
     async _checkUserSubscription() {
-        const subscriptionInfo = await this.checkUserSubscription(this._data.chainId, this._data.tokenAddress, this._data.creatorId, this._data.communityId);
-        this.nftMinter.isRenewal = subscriptionInfo.isSubscribed;
-        if (subscriptionInfo.isSubscribed) this.nftMinter.renewalDate = subscriptionInfo.endTime;
+        try {
+            const subscriptionInfo = await this.checkUserSubscription(this._data.chainId, this._data.tokenAddress, this._data.creatorId, this._data.communityId);
+            this.nftMinter.isRenewal = subscriptionInfo.isSubscribed;
+            if (subscriptionInfo.isSubscribed) this.nftMinter.renewalDate = subscriptionInfo.endTime;
+        } catch (err) {
+            console.error(err);
+        }
     }
 
     private createWidget(isTonNetwork: boolean) {

@@ -197,10 +197,15 @@ define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["
             this.openNFTMinter();
         }
         async _checkUserSubscription() {
-            const subscriptionInfo = await this.checkUserSubscription(this._data.chainId, this._data.tokenAddress, this._data.creatorId, this._data.communityId);
-            this.nftMinter.isRenewal = subscriptionInfo.isSubscribed;
-            if (subscriptionInfo.isSubscribed)
-                this.nftMinter.renewalDate = subscriptionInfo.endTime;
+            try {
+                const subscriptionInfo = await this.checkUserSubscription(this._data.chainId, this._data.tokenAddress, this._data.creatorId, this._data.communityId);
+                this.nftMinter.isRenewal = subscriptionInfo.isSubscribed;
+                if (subscriptionInfo.isSubscribed)
+                    this.nftMinter.renewalDate = subscriptionInfo.endTime;
+            }
+            catch (err) {
+                console.error(err);
+            }
         }
         createWidget(isTonNetwork) {
             const widget = isTonNetwork ? new scom_ton_subscription_1.default() : new scom_nft_minter_1.default();
