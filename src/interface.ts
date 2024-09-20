@@ -39,3 +39,9 @@ export interface ICommissionInfo {
     walletAddress: string;
     share: string;
 }
+
+export interface ICheckUserSubscription {
+    isSubscribed: boolean;
+    startTime?: number;
+    endTime?: number;
+}

@@ -38,6 +38,11 @@ declare module "@scom/scom-subscription-affiliate/interface.ts" {
         walletAddress: string;
         share: string;
     }
+    export interface ICheckUserSubscription {
+        isSubscribed: boolean;
+        startTime?: number;
+        endTime?: number;
+    }
 }
 /// <amd-module name="@scom/scom-subscription-affiliate/index.css.ts" />
 declare module "@scom/scom-subscription-affiliate/index.css.ts" {
@@ -120,7 +125,7 @@ declare module "@scom/scom-subscription-affiliate/components/subscriptionBundle.
 /// <amd-module name="@scom/scom-subscription-affiliate/components/subscriptionModule.tsx" />
 declare module "@scom/scom-subscription-affiliate/components/subscriptionModule.tsx" {
     import { ControlElement, Module } from '@ijstech/components';
-    import { ISubscription } from "@scom/scom-subscription-affiliate/interface.ts";
+    import { ICheckUserSubscription, ISubscription } from "@scom/scom-subscription-affiliate/interface.ts";
     type onSubscribedCallback = () => void;
     global {
         namespace JSX {
@@ -143,11 +148,7 @@ declare module "@scom/scom-subscription-affiliate/components/subscriptionModule.
         private tonSubscription;
         onSubscribed: onSubscribedCallback;
         setData(data: ISubscription): void;
-        checkUserSubscription(chainId: number, nftAddress: string): Promise<{
-            isSubscribed: boolean;
-            startTime?: number;
-            endTime?: number;
-        }>;
+        checkUserSubscription(chainId: number, nftAddress: string, communityCreatorId: string, communityId: string): Promise<ICheckUserSubscription>;
         private updateUI;
         private handleSubscribeButtonClick;
         _checkUserSubscription(): Promise<void>;
@@ -168,6 +169,7 @@ declare module "@scom/scom-subscription-affiliate/components/index.ts" {
 /// <amd-module name="@scom/scom-subscription-affiliate" />
 declare module "@scom/scom-subscription-affiliate" {
     import { Module, ControlElement } from '@ijstech/components';
+    import { ICheckUserSubscription } from "@scom/scom-subscription-affiliate/interface.ts";
     import { SocialDataManager } from '@scom/scom-social-sdk';
     interface ScomSubscriptionAffiliateElement extends ControlElement {
     }
@@ -188,15 +190,11 @@ declare module "@scom/scom-subscription-affiliate" {
         private _data;
         private _dataManager;
         private communityInfo;
-        checkUserSubscription: (chainId: number, nftAddress: string) => Promise<{
-            isSubscribed: boolean;
-            startTime?: number;
-            endTime?: number;
-        }>;
+        checkUserSubscription: (chainId: number, nftAddress: string, communityCreatorId: string, communityId: string) => Promise<ICheckUserSubscription>;
         get dataManager(): SocialDataManager;
         set dataManager(manager: SocialDataManager);
         init(): void;
-        handleCheckUserSubscription(chainId: number, nftAddress: string): Promise<{
+        handleCheckUserSubscription(chainId: number, nftAddress: string, communityCreatorId: string, communityId: string): Promise<{
             isSubscribed: boolean;
             startTime?: number;
             endTime?: number;

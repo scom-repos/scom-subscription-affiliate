@@ -8,7 +8,7 @@ import {
     application,
     Image,
 } from '@ijstech/components';
-import { ISubscriptionAffiliate } from './interface';
+import { ICheckUserSubscription, ISubscriptionAffiliate } from './interface';
 import { imageStyle, preWrapStyle } from './index.css';
 import { fetchCommunityInfo } from './utils';
 import { ICommunityInfo, PaymentModel, SocialDataManager } from '@scom/scom-social-sdk';
@@ -39,7 +39,7 @@ export default class ScomSubscriptionAffiliate extends Module {
     private _data: ISubscriptionAffiliate;
     private _dataManager: SocialDataManager;
     private communityInfo: ICommunityInfo;
-    checkUserSubscription: (chainId: number, nftAddress: string) => Promise<{ isSubscribed: boolean, startTime?: number, endTime?: number }>;
+    checkUserSubscription: (chainId: number, nftAddress: string, communityCreatorId: string, communityId: string) => Promise<ICheckUserSubscription>;
 
     get dataManager() {
         return this._dataManager || application.store?.mainDataManager;
@@ -54,9 +54,9 @@ export default class ScomSubscriptionAffiliate extends Module {
         this.subscriptionModule.checkUserSubscription = this.handleCheckUserSubscription.bind(this);
     }
 
-    async handleCheckUserSubscription(chainId: number, nftAddress: string): Promise<{ isSubscribed: boolean, startTime?: number, endTime?: number }> {
+    async handleCheckUserSubscription(chainId: number, nftAddress: string, communityCreatorId: string, communityId: string): Promise<{ isSubscribed: boolean, startTime?: number, endTime?: number }> {
         if (this.checkUserSubscription) {
-            return await this.checkUserSubscription(chainId, nftAddress);
+            return await this.checkUserSubscription(chainId, nftAddress, communityCreatorId, communityId);
         }
         return { isSubscribed: false };
     }
