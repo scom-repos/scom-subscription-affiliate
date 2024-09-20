@@ -202,32 +202,42 @@ define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["
             if (subscriptionInfo.isSubscribed)
                 this.nftMinter.renewalDate = subscriptionInfo.endTime;
         }
-        async openNFTMinter(discountRuleId) {
-            if (!this.nftMinter) {
-                const telegram = window['Telegram'];
-                this.nftMinter = telegram ? new scom_ton_subscription_1.default() : new scom_nft_minter_1.default();
-                this.nftMinter.display = 'block';
-                this.nftMinter.margin = { top: '1rem' };
-            }
-            this.nftMinter.onMintedNFT = async () => {
-                this.nftMinter.closeModal();
+        createWidget(isTonNetwork) {
+            const widget = isTonNetwork ? new scom_ton_subscription_1.default() : new scom_nft_minter_1.default();
+            widget.display = 'block';
+            widget.margin = { top: '1rem' };
+            widget.onMintedNFT = () => {
+                widget.closeModal();
                 if (this.onSubscribed)
                     this.onSubscribed();
             };
-            this.nftMinter.openModal({
-                title: this.nftMinter instanceof scom_nft_minter_1.default ? 'Mint NFT to unlock content' : 'Subscribe',
+            return widget;
+        }
+        async openNFTMinter(discountRuleId) {
+            const policy = this._data.policy;
+            const isTonNetwork = !policy.chainId;
+            if (isTonNetwork && !this.tonSubscription) {
+                this.tonSubscription = this.createWidget(isTonNetwork);
+            }
+            if (!isTonNetwork && !this.nftMinter) {
+                this.nftMinter = this.createWidget(isTonNetwork);
+            }
+            const widget = isTonNetwork ? this.tonSubscription : this.nftMinter;
+            const isNftMinter = widget instanceof scom_nft_minter_1.default;
+            widget.openModal({
+                title: isNftMinter ? 'Mint NFT to unlock content' : 'Subscribe',
                 width: '38rem',
                 zIndex: 200,
                 popupPlacement: 'top',
                 padding: { top: "1rem", bottom: "1rem", left: "1.5rem", right: "1.5rem" },
                 closeOnBackdropClick: false,
             });
-            await this.nftMinter.ready();
-            this.nftMinter.showLoading();
+            await widget.ready();
+            widget.showLoading();
             await this._checkUserSubscription();
-            if (this.nftMinter instanceof scom_nft_minter_1.default) {
+            if (isNftMinter) {
                 const walletAddress = (0, utils_1.getNFTRecipientWalletAddress)();
-                const builder = this.nftMinter.getConfigurators('customNft').find((conf) => conf.target === 'Builders');
+                const builder = widget.getConfigurators('customNft').find((conf) => conf.target === 'Builders');
                 builder.setData({
                     productType: 'Subscription',
                     nftType: this._data.tokenType,
@@ -240,10 +250,12 @@ define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["
                 });
             }
             else {
-                const builder = this.nftMinter.getConfigurators().find((conf) => conf.target === 'Builders');
+                const builder = widget.getConfigurators().find((conf) => conf.target === 'Builders');
                 builder.setData({
                     ...this._data.policy,
-                    discountRuleId: discountRuleId
+                    creatorId: this._data.creatorId,
+                    communityId: this._data.communityId,
+                    discountRuleId: discountRuleId,
                 });
             }
         }
@@ -419,6 +431,8 @@ define("@scom/scom-subscription-affiliate", ["require", "exports", "@ijstech/com
             if (subscriptions.length > 0) {
                 const subscription = subscriptions[0];
                 this.subscriptionModule.setData({
+                    creatorId: this.communityInfo.creatorId,
+                    communityId: this.communityInfo.communityId,
                     chainId: subscription.chainId,
                     tokenAddress: subscription.tokenAddress,
                     tokenType: subscription.tokenType,

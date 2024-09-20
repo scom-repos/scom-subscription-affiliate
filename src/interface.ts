@@ -8,6 +8,8 @@ export interface ISubscriptionAffiliate {
 }
 
 export interface ISubscription {
+	creatorId: string;
+	communityId: string;
 	chainId: number;
 	tokenAddress?: string;
 	tokenType?: TokenType;

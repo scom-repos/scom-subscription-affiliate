@@ -42,7 +42,8 @@ export class SubscriptionModule extends Module {
     private iconCollapse: Icon;
     private pnlSubscriptionBundles: StackLayout;
     private _data: ISubscription;
-    private nftMinter: ScomNftMinter | ScomTonSubscription;
+    private nftMinter: ScomNftMinter;
+    private tonSubscription: ScomTonSubscription;
     onSubscribed: onSubscribedCallback;
 
     setData(data: ISubscription) {
@@ -84,31 +85,42 @@ export class SubscriptionModule extends Module {
         if (subscriptionInfo.isSubscribed) this.nftMinter.renewalDate = subscriptionInfo.endTime;
     }
 
-    private async openNFTMinter(discountRuleId?: number) {
-        if (!this.nftMinter) {
-            const telegram = window['Telegram'];
-            this.nftMinter = telegram ? new ScomTonSubscription() : new ScomNftMinter();
-            this.nftMinter.display = 'block';
-            this.nftMinter.margin = { top: '1rem' };
-        }
-        this.nftMinter.onMintedNFT = async () => {
-            this.nftMinter.closeModal();
+    private createWidget(isTonNetwork: boolean) {
+        const widget = isTonNetwork ? new ScomTonSubscription() : new ScomNftMinter();
+        widget.display = 'block';
+        widget.margin = { top: '1rem' };
+        widget.onMintedNFT = () => {
+            widget.closeModal();
             if (this.onSubscribed) this.onSubscribed();
         }
-        this.nftMinter.openModal({
-            title: this.nftMinter instanceof ScomNftMinter ? 'Mint NFT to unlock content' : 'Subscribe',
+        return widget;
+    }
+
+    private async openNFTMinter(discountRuleId?: number) {
+        const policy = this._data.policy;
+        const isTonNetwork = !policy.chainId;
+        if (isTonNetwork && !this.tonSubscription) {
+            this.tonSubscription = this.createWidget(isTonNetwork) as ScomTonSubscription;
+        }
+        if (!isTonNetwork && !this.nftMinter) {
+            this.nftMinter = this.createWidget(isTonNetwork) as ScomNftMinter;
+        }
+        const widget = isTonNetwork ? this.tonSubscription : this.nftMinter;
+        const isNftMinter = widget instanceof ScomNftMinter;
+        widget.openModal({
+            title: isNftMinter ? 'Mint NFT to unlock content' : 'Subscribe',
             width: '38rem',
             zIndex: 200,
             popupPlacement: 'top',
             padding: { top: "1rem", bottom: "1rem", left: "1.5rem", right: "1.5rem" },
             closeOnBackdropClick: false,
         });
-        await this.nftMinter.ready();
-        this.nftMinter.showLoading();
+        await widget.ready();
+        widget.showLoading();
         await this._checkUserSubscription();
-        if (this.nftMinter instanceof ScomNftMinter) {
+        if (isNftMinter) {
             const walletAddress = getNFTRecipientWalletAddress();
-            const builder = this.nftMinter.getConfigurators('customNft').find((conf: any) => conf.target === 'Builders');
+            const builder = widget.getConfigurators('customNft').find((conf: any) => conf.target === 'Builders');
             builder.setData({
                 productType: 'Subscription',
                 nftType: this._data.tokenType,
@@ -120,10 +132,12 @@ export class SubscriptionModule extends Module {
                 referrer: this._data.referrer
             });
         } else {
-            const builder = this.nftMinter.getConfigurators().find((conf: any) => conf.target === 'Builders');
+            const builder = widget.getConfigurators().find((conf: any) => conf.target === 'Builders');
             builder.setData({
                 ...this._data.policy,
-                discountRuleId: discountRuleId
+                creatorId: this._data.creatorId,
+                communityId: this._data.communityId,
+                discountRuleId: discountRuleId,
             });
         }
     }

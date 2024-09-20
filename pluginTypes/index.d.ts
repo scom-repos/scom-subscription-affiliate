@@ -9,6 +9,8 @@ declare module "@scom/scom-subscription-affiliate/interface.ts" {
         walletAddress?: string;
     }
     export interface ISubscription {
+        creatorId: string;
+        communityId: string;
         chainId: number;
         tokenAddress?: string;
         tokenType?: TokenType;
@@ -138,6 +140,7 @@ declare module "@scom/scom-subscription-affiliate/components/subscriptionModule.
         private pnlSubscriptionBundles;
         private _data;
         private nftMinter;
+        private tonSubscription;
         onSubscribed: onSubscribedCallback;
         setData(data: ISubscription): void;
         checkUserSubscription(chainId: number, nftAddress: string): Promise<{
@@ -148,6 +151,7 @@ declare module "@scom/scom-subscription-affiliate/components/subscriptionModule.
         private updateUI;
         private handleSubscribeButtonClick;
         _checkUserSubscription(): Promise<void>;
+        private createWidget;
         private openNFTMinter;
         init(): void;
         private onSubscribeBundle;

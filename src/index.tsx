@@ -159,6 +159,8 @@ export default class ScomSubscriptionAffiliate extends Module {
         if (subscriptions.length > 0) {
             const subscription = subscriptions[0];
             this.subscriptionModule.setData({
+                creatorId: this.communityInfo.creatorId,
+                communityId: this.communityInfo.communityId,
                 chainId: subscription.chainId,
                 tokenAddress: subscription.tokenAddress,
                 tokenType: subscription.tokenType,
