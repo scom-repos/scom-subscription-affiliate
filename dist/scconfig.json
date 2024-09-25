@@ -1,7 +1,7 @@
 {
     "name": "@scom/scom-subscription-affiliate",
     "type": "widget",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "dependencies": [
         "@ijstech/components",
         "@scom/scom-signer",
@@ -11,16 +11,16 @@
         "@scom/scom-token-list",
         "@scom/scom-product-contract",
         "@scom/scom-network-list",
-        "@scom/scom-commission-proxy-contract",
-        "@scom/oswap-troll-nft-contract",
         "@scom/scom-multicall",
         "@scom/scom-dapp-container",
-        "@scom/scom-network-picker",
-        "@scom/scom-commission-fee-setup",
         "@scom/scom-tx-status-modal",
         "@scom/scom-token-modal",
         "@scom/scom-token-input",
         "@scom/scom-wallet-modal",
+        "@scom/scom-network-picker",
+        "@scom/scom-commission-proxy-contract",
+        "@scom/oswap-troll-nft-contract",
+        "@scom/scom-commission-fee-setup",
         "@scom/scom-nft-minter",
         "@scom/scom-ton-subscription"
     ]
