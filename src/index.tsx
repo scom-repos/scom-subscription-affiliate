@@ -11,7 +11,7 @@ import {
 import { ICheckUserSubscription, ISubscriptionAffiliate } from './interface';
 import { imageStyle, preWrapStyle } from './index.css';
 import { fetchCommunityInfo } from './utils';
-import { ICommunityInfo, PaymentModel, SocialDataManager } from '@scom/scom-social-sdk';
+import { ICommunityInfo, PaymentMethod, PaymentModel, SocialDataManager } from '@scom/scom-social-sdk';
 import formSchema from './formSchema';
 import { SubscriptionModule } from './components';
 
@@ -39,7 +39,7 @@ export default class ScomSubscriptionAffiliate extends Module {
     private _data: ISubscriptionAffiliate;
     private _dataManager: SocialDataManager;
     private communityInfo: ICommunityInfo;
-    checkUserSubscription: (chainId: number, nftAddress: string, communityCreatorId: string, communityId: string) => Promise<ICheckUserSubscription>;
+    checkUserSubscription: (communityCreatorId: string, communityId: string, paymentMethod?: PaymentMethod) => Promise<ICheckUserSubscription>;
 
     get dataManager() {
         return this._dataManager || application.store?.mainDataManager;
@@ -54,9 +54,9 @@ export default class ScomSubscriptionAffiliate extends Module {
         this.subscriptionModule.checkUserSubscription = this.handleCheckUserSubscription.bind(this);
     }
 
-    async handleCheckUserSubscription(chainId: number, nftAddress: string, communityCreatorId: string, communityId: string): Promise<{ isSubscribed: boolean, startTime?: number, endTime?: number }> {
+    async handleCheckUserSubscription(communityCreatorId: string, communityId: string, paymentMethod?: PaymentMethod): Promise<{ isSubscribed: boolean, startTime?: number, endTime?: number }> {
         if (this.checkUserSubscription) {
-            return await this.checkUserSubscription(chainId, nftAddress, communityCreatorId, communityId);
+            return await this.checkUserSubscription(communityCreatorId, communityId, paymentMethod);
         }
         return { isSubscribed: false };
     }

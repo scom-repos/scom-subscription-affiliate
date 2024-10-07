@@ -171,7 +171,7 @@ define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["
             this._data = data;
             this.updateUI();
         }
-        async checkUserSubscription(chainId, nftAddress, communityCreatorId, communityId) {
+        async checkUserSubscription(communityCreatorId, communityId, paymentMethod) {
             return { isSubscribed: false };
         }
         updateUI() {
@@ -198,7 +198,7 @@ define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["
         }
         async _checkUserSubscription() {
             try {
-                const subscriptionInfo = await this.checkUserSubscription(this._data.chainId, this._data.tokenAddress, this._data.creatorId, this._data.communityId);
+                const subscriptionInfo = await this.checkUserSubscription(this._data.creatorId, this._data.communityId);
                 this.nftMinter.isRenewal = subscriptionInfo.isSubscribed;
                 if (subscriptionInfo.isSubscribed)
                     this.nftMinter.renewalDate = subscriptionInfo.endTime;
@@ -341,9 +341,9 @@ define("@scom/scom-subscription-affiliate", ["require", "exports", "@ijstech/com
             super.init();
             this.subscriptionModule.checkUserSubscription = this.handleCheckUserSubscription.bind(this);
         }
-        async handleCheckUserSubscription(chainId, nftAddress, communityCreatorId, communityId) {
+        async handleCheckUserSubscription(communityCreatorId, communityId, paymentMethod) {
             if (this.checkUserSubscription) {
-                return await this.checkUserSubscription(chainId, nftAddress, communityCreatorId, communityId);
+                return await this.checkUserSubscription(communityCreatorId, communityId, paymentMethod);
             }
             return { isSubscribed: false };
         }

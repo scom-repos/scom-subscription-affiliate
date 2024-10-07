@@ -13,7 +13,7 @@ import { Utils } from '@ijstech/eth-wallet';
 import { tokenStore } from '@scom/scom-token-list';
 import ScomNftMinter from '@scom/scom-nft-minter';
 import ScomTonSubscription from '@scom/scom-ton-subscription';
-import { ISubscriptionDiscountRule, PaymentModel } from '@scom/scom-social-sdk';
+import { ISubscriptionDiscountRule, PaymentMethod, PaymentModel } from '@scom/scom-social-sdk';
 import { SubscriptionBundle } from './subscriptionBundle';
 import { ICheckUserSubscription, ISubscription } from '../interface';
 import { getNFTRecipientWalletAddress } from '../utils';
@@ -51,7 +51,7 @@ export class SubscriptionModule extends Module {
         this.updateUI();
     }
 
-    async checkUserSubscription(chainId: number, nftAddress: string, communityCreatorId: string, communityId: string): Promise<ICheckUserSubscription> {
+    async checkUserSubscription(communityCreatorId: string, communityId: string, paymentMethod?: PaymentMethod): Promise<ICheckUserSubscription> {
         return { isSubscribed: false };
     }
 
@@ -81,7 +81,7 @@ export class SubscriptionModule extends Module {
     
     async _checkUserSubscription() {
         try {
-            const subscriptionInfo = await this.checkUserSubscription(this._data.chainId, this._data.tokenAddress, this._data.creatorId, this._data.communityId);
+            const subscriptionInfo = await this.checkUserSubscription(this._data.creatorId, this._data.communityId);
             this.nftMinter.isRenewal = subscriptionInfo.isSubscribed;
             if (subscriptionInfo.isSubscribed) this.nftMinter.renewalDate = subscriptionInfo.endTime;
         } catch (err) {

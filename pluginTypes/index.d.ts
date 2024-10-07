@@ -125,6 +125,7 @@ declare module "@scom/scom-subscription-affiliate/components/subscriptionBundle.
 /// <amd-module name="@scom/scom-subscription-affiliate/components/subscriptionModule.tsx" />
 declare module "@scom/scom-subscription-affiliate/components/subscriptionModule.tsx" {
     import { ControlElement, Module } from '@ijstech/components';
+    import { PaymentMethod } from '@scom/scom-social-sdk';
     import { ICheckUserSubscription, ISubscription } from "@scom/scom-subscription-affiliate/interface.ts";
     type onSubscribedCallback = () => void;
     global {
@@ -148,7 +149,7 @@ declare module "@scom/scom-subscription-affiliate/components/subscriptionModule.
         private tonSubscription;
         onSubscribed: onSubscribedCallback;
         setData(data: ISubscription): void;
-        checkUserSubscription(chainId: number, nftAddress: string, communityCreatorId: string, communityId: string): Promise<ICheckUserSubscription>;
+        checkUserSubscription(communityCreatorId: string, communityId: string, paymentMethod?: PaymentMethod): Promise<ICheckUserSubscription>;
         private updateUI;
         private handleSubscribeButtonClick;
         _checkUserSubscription(): Promise<void>;
@@ -170,7 +171,7 @@ declare module "@scom/scom-subscription-affiliate/components/index.ts" {
 declare module "@scom/scom-subscription-affiliate" {
     import { Module, ControlElement } from '@ijstech/components';
     import { ICheckUserSubscription } from "@scom/scom-subscription-affiliate/interface.ts";
-    import { SocialDataManager } from '@scom/scom-social-sdk';
+    import { PaymentMethod, SocialDataManager } from '@scom/scom-social-sdk';
     interface ScomSubscriptionAffiliateElement extends ControlElement {
     }
     global {
@@ -190,11 +191,11 @@ declare module "@scom/scom-subscription-affiliate" {
         private _data;
         private _dataManager;
         private communityInfo;
-        checkUserSubscription: (chainId: number, nftAddress: string, communityCreatorId: string, communityId: string) => Promise<ICheckUserSubscription>;
+        checkUserSubscription: (communityCreatorId: string, communityId: string, paymentMethod?: PaymentMethod) => Promise<ICheckUserSubscription>;
         get dataManager(): SocialDataManager;
         set dataManager(manager: SocialDataManager);
         init(): void;
-        handleCheckUserSubscription(chainId: number, nftAddress: string, communityCreatorId: string, communityId: string): Promise<{
+        handleCheckUserSubscription(communityCreatorId: string, communityId: string, paymentMethod?: PaymentMethod): Promise<{
             isSubscribed: boolean;
             startTime?: number;
             endTime?: number;
