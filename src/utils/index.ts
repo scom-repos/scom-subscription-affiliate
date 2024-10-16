@@ -17,6 +17,20 @@ export function checkIsLoggedIn() {
     return isLoggedIn;
 }
 
+export function getUserWalletAddresses() {
+    let userWalletAddresses: string[] = [];
+    const isLoggedIn = checkIsLoggedIn();
+    if (isLoggedIn) {
+        const socialWalletAddress = localStorage.getItem('loggedInAccount');
+        userWalletAddresses.push(socialWalletAddress);
+        const masterWalletAddress = localStorage.getItem('masterWalletAccount');
+        if (masterWalletAddress) {
+            userWalletAddresses.push(masterWalletAddress);
+        }
+    }
+    return userWalletAddresses;
+}
+
 export function getNFTRecipientWalletAddress() {
     let walletAddress: string;
     const isLoggedIn = checkIsLoggedIn();

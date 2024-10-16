@@ -16,7 +16,7 @@ import ScomTonSubscription from '@scom/scom-ton-subscription';
 import { ISubscriptionDiscountRule, PaymentMethod, PaymentModel } from '@scom/scom-social-sdk';
 import { SubscriptionBundle } from './subscriptionBundle';
 import { ICheckUserSubscription, ISubscription } from '../interface';
-import { getNFTRecipientWalletAddress } from '../utils';
+import { getUserWalletAddresses } from '../utils';
 
 const Theme = Styles.Theme.ThemeVars;
 
@@ -123,7 +123,7 @@ export class SubscriptionModule extends Module {
         widget.showLoading();
         await this._checkUserSubscription();
         if (isNftMinter) {
-            const walletAddress = getNFTRecipientWalletAddress();
+            const walletAddresses = await getUserWalletAddresses();
             const builder = widget.getConfigurators('customNft').find((conf: any) => conf.target === 'Builders');
             builder.setData({
                 productType: 'Subscription',
@@ -131,7 +131,7 @@ export class SubscriptionModule extends Module {
                 chainId: this._data.chainId,
                 nftAddress: this._data.tokenAddress,
                 erc1155Index: this._data.tokenId,
-                recipient: walletAddress,
+                recipients: walletAddresses,
                 discountRuleId: discountRuleId,
                 referrer: this._data.referrer
             });

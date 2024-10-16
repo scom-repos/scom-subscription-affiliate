@@ -56,6 +56,7 @@ declare module "@scom/scom-subscription-affiliate/utils/index.ts" {
     export function fetchCommunityInfo(dataManager: SocialDataManager, communityId: string, creatorId: string): Promise<ICommunityInfo>;
     export function getCommunityBasicInfoFromUri(communityUri: string): import("@scom/scom-social-sdk").ICommunityBasicInfo;
     export function checkIsLoggedIn(): boolean;
+    export function getUserWalletAddresses(): string[];
     export function getNFTRecipientWalletAddress(): string;
 }
 /// <amd-module name="@scom/scom-subscription-affiliate/formSchema.ts" />

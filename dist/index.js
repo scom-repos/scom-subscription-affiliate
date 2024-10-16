@@ -33,7 +33,7 @@ define("@scom/scom-subscription-affiliate/index.css.ts", ["require", "exports", 
 define("@scom/scom-subscription-affiliate/utils/index.ts", ["require", "exports", "@scom/scom-social-sdk"], function (require, exports, scom_social_sdk_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.getNFTRecipientWalletAddress = exports.checkIsLoggedIn = exports.getCommunityBasicInfoFromUri = exports.fetchCommunityInfo = void 0;
+    exports.getNFTRecipientWalletAddress = exports.getUserWalletAddresses = exports.checkIsLoggedIn = exports.getCommunityBasicInfoFromUri = exports.fetchCommunityInfo = void 0;
     async function fetchCommunityInfo(dataManager, communityId, creatorId) {
         const info = await dataManager.fetchCommunityInfo(creatorId, communityId);
         return info;
@@ -51,6 +51,20 @@ define("@scom/scom-subscription-affiliate/utils/index.ts", ["require", "exports"
         return isLoggedIn;
     }
     exports.checkIsLoggedIn = checkIsLoggedIn;
+    function getUserWalletAddresses() {
+        let userWalletAddresses = [];
+        const isLoggedIn = checkIsLoggedIn();
+        if (isLoggedIn) {
+            const socialWalletAddress = localStorage.getItem('loggedInAccount');
+            userWalletAddresses.push(socialWalletAddress);
+            const masterWalletAddress = localStorage.getItem('masterWalletAccount');
+            if (masterWalletAddress) {
+                userWalletAddresses.push(masterWalletAddress);
+            }
+        }
+        return userWalletAddresses;
+    }
+    exports.getUserWalletAddresses = getUserWalletAddresses;
     function getNFTRecipientWalletAddress() {
         let walletAddress;
         const isLoggedIn = checkIsLoggedIn();
@@ -241,7 +255,7 @@ define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["
             widget.showLoading();
             await this._checkUserSubscription();
             if (isNftMinter) {
-                const walletAddress = (0, utils_1.getNFTRecipientWalletAddress)();
+                const walletAddresses = await (0, utils_1.getUserWalletAddresses)();
                 const builder = widget.getConfigurators('customNft').find((conf) => conf.target === 'Builders');
                 builder.setData({
                     productType: 'Subscription',
@@ -249,7 +263,7 @@ define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["
                     chainId: this._data.chainId,
                     nftAddress: this._data.tokenAddress,
                     erc1155Index: this._data.tokenId,
-                    recipient: walletAddress,
+                    recipients: walletAddresses,
                     discountRuleId: discountRuleId,
                     referrer: this._data.referrer
                 });
