@@ -290,6 +290,19 @@ define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["
             this.pnlSubscriptionBundles.visible = !this.pnlSubscriptionBundles.visible;
             this.iconCollapse.name = this.pnlSubscriptionBundles.visible ? 'angle-up' : 'angle-down';
         }
+        getSubscriptionDisplayName(subscription) {
+            if (subscription.isDisplayAsTitle) {
+                return subscription.name;
+            }
+            else {
+                if (subscription.minDuration) {
+                    return subscription.minDuration + " Days";
+                }
+                else {
+                    return "Limited Offer";
+                }
+            }
+        }
         renderSubscriptionBundles(symbol) {
             const now = Math.round(Date.now() / 1000);
             const filteredRules = this._data?.discountRules?.filter(rule => {
@@ -303,6 +316,7 @@ define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["
                     width: '100%',
                     data: {
                         ...subscription,
+                        name: this.getSubscriptionDisplayName(subscription),
                         basePrice: this._data.price,
                         tokenSymbol: symbol
                     }

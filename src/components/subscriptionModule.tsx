@@ -160,6 +160,18 @@ export class SubscriptionModule extends Module {
         this.pnlSubscriptionBundles.visible = !this.pnlSubscriptionBundles.visible;
         this.iconCollapse.name = this.pnlSubscriptionBundles.visible ? 'angle-up' : 'angle-down';
     }
+    
+    private getSubscriptionDisplayName(subscription: ISubscriptionDiscountRule) {
+        if (subscription.isDisplayAsTitle) {
+            return subscription.name;
+        } else {
+            if (subscription.minDuration) {
+                return subscription.minDuration + " Days"
+            } else {
+                return "Limited Offer"
+            }
+        }
+    }
 
     private renderSubscriptionBundles(symbol: string) {
         const now = Math.round(Date.now() / 1000);
@@ -173,6 +185,7 @@ export class SubscriptionModule extends Module {
                 width: '100%',
                 data: {
                     ...subscription,
+                    name: this.getSubscriptionDisplayName(subscription),
                     basePrice: this._data.price,
                     tokenSymbol: symbol
                 }

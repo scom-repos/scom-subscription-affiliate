@@ -1,4 +1,4 @@
-import { IProtectedMembershipPolicy, TokenType } from "@scom/scom-social-sdk";
+import { IProtectedMembershipPolicy, ISubscriptionDiscountRule, TokenType } from "@scom/scom-social-sdk";
 
 export interface ISubscriptionAffiliate {
     communityUri?: string;
@@ -20,18 +20,6 @@ export interface ISubscription {
 	discountRules?: ISubscriptionDiscountRule[];
     referrer?: string;
 	policy?: IProtectedMembershipPolicy;
-}
-
-export interface ISubscriptionDiscountRule {
-    id: number;
-    name: string;
-    startTime: number;
-    endTime: number;
-    minDuration?: number;
-    discountType: 'Percentage' | 'FixedAmount';
-    discountPercentage?: number;
-    fixedPrice?: number;
-    discountApplication: number;
 }
 
 export interface ICommissionInfo {
