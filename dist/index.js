@@ -175,7 +175,7 @@ define("@scom/scom-subscription-affiliate/components/subscriptionBundle.tsx", ["
     ], SubscriptionBundle);
     exports.SubscriptionBundle = SubscriptionBundle;
 });
-define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["require", "exports", "@ijstech/components", "@ijstech/eth-wallet", "@scom/scom-token-list", "@scom/scom-nft-minter", "@scom/scom-ton-subscription", "@scom/scom-subscription-affiliate/components/subscriptionBundle.tsx", "@scom/scom-subscription-affiliate/utils/index.ts"], function (require, exports, components_3, eth_wallet_1, scom_token_list_1, scom_nft_minter_1, scom_ton_subscription_1, subscriptionBundle_1, utils_1) {
+define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["require", "exports", "@ijstech/components", "@ijstech/eth-wallet", "@scom/scom-token-list", "@scom/scom-nft-minter", "@scom/scom-ton-subscription", "@scom/scom-social-sdk", "@scom/scom-subscription-affiliate/components/subscriptionBundle.tsx", "@scom/scom-subscription-affiliate/utils/index.ts"], function (require, exports, components_3, eth_wallet_1, scom_token_list_1, scom_nft_minter_1, scom_ton_subscription_1, scom_social_sdk_2, subscriptionBundle_1, utils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.SubscriptionModule = void 0;
@@ -244,7 +244,7 @@ define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["
             const widget = isTonNetwork ? this.tonSubscription : this.nftMinter;
             const isNftMinter = widget instanceof scom_nft_minter_1.default;
             widget.openModal({
-                title: isNftMinter ? 'Mint NFT to unlock content' : 'Subscribe',
+                title: `${policy.paymentModel === scom_social_sdk_2.PaymentModel.Subscription ? 'Subscribe' : 'Mint NFT'} to Unlock Content`,
                 width: '38rem',
                 zIndex: 200,
                 popupPlacement: 'top',
@@ -340,7 +340,7 @@ define("@scom/scom-subscription-affiliate/components/index.ts", ["require", "exp
     Object.defineProperty(exports, "SubscriptionBundle", { enumerable: true, get: function () { return subscriptionBundle_2.SubscriptionBundle; } });
     Object.defineProperty(exports, "SubscriptionModule", { enumerable: true, get: function () { return subscriptionModule_1.SubscriptionModule; } });
 });
-define("@scom/scom-subscription-affiliate", ["require", "exports", "@ijstech/components", "@scom/scom-subscription-affiliate/index.css.ts", "@scom/scom-subscription-affiliate/utils/index.ts", "@scom/scom-social-sdk", "@scom/scom-subscription-affiliate/formSchema.ts"], function (require, exports, components_4, index_css_2, utils_2, scom_social_sdk_2, formSchema_1) {
+define("@scom/scom-subscription-affiliate", ["require", "exports", "@ijstech/components", "@scom/scom-subscription-affiliate/index.css.ts", "@scom/scom-subscription-affiliate/utils/index.ts", "@scom/scom-social-sdk", "@scom/scom-subscription-affiliate/formSchema.ts"], function (require, exports, components_4, index_css_2, utils_2, scom_social_sdk_3, formSchema_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     const Theme = components_4.Styles.Theme.ThemeVars;
@@ -445,7 +445,7 @@ define("@scom/scom-subscription-affiliate", ["require", "exports", "@ijstech/com
             this.lblName.link.target = communityUrl === window.location.origin ? '_self' : '_blank';
             this.lblDescription.caption = this.communityInfo.description;
             const telegram = window['Telegram'];
-            const subscriptions = this.communityInfo.policies?.filter(policy => policy.paymentModel === scom_social_sdk_2.PaymentModel.Subscription &&
+            const subscriptions = this.communityInfo.policies?.filter(policy => policy.paymentModel === scom_social_sdk_3.PaymentModel.Subscription &&
                 (telegram ? !policy.chainId : policy.chainId)) || [];
             if (subscriptions.length > 0) {
                 const subscription = subscriptions[0];

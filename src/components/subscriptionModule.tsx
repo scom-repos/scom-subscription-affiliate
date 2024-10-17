@@ -112,7 +112,7 @@ export class SubscriptionModule extends Module {
         const widget = isTonNetwork ? this.tonSubscription : this.nftMinter;
         const isNftMinter = widget instanceof ScomNftMinter;
         widget.openModal({
-            title: isNftMinter ? 'Mint NFT to unlock content' : 'Subscribe',
+            title: `${policy.paymentModel === PaymentModel.Subscription ? 'Subscribe' : 'Mint NFT'} to Unlock Content`,
             width: '38rem',
             zIndex: 200,
             popupPlacement: 'top',
