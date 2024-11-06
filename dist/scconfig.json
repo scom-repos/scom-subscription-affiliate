@@ -22,7 +22,6 @@
         "@scom/oswap-troll-nft-contract",
         "@scom/scom-commission-fee-setup",
         "@scom/scom-nft-minter",
-        "@scom/scom-payment-widget",
         "@scom/scom-ton-subscription"
     ]
 }
