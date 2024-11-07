@@ -18,7 +18,6 @@
         "@scom/scom-network-list": "^0.1.0",
         "@scom/scom-network-picker": "^0.1.4",
         "@scom/scom-dapp-container": "^0.1.2",
-        "@scom/scom-commission-fee-setup": "^0.1.1",
         "@scom/scom-token-input": "^0.1.1",
         "@scom/scom-wallet-modal": "^0.1.0",
         "@scom/scom-tx-status-modal": "^0.1.0"

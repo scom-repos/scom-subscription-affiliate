@@ -11,8 +11,7 @@ import {
 } from '@ijstech/components';
 import { Utils } from '@ijstech/eth-wallet';
 import { tokenStore } from '@scom/scom-token-list';
-import ScomNftMinter from '@scom/scom-nft-minter';
-import ScomTonSubscription from '@scom/scom-ton-subscription';
+import ScomSubscription from '@scom/scom-subscription';
 import { ISubscriptionDiscountRule, PaymentMethod, PaymentModel } from '@scom/scom-social-sdk';
 import { SubscriptionBundle } from './subscriptionBundle';
 import { ICheckUserSubscription, ISubscription } from '../interface';
@@ -42,8 +41,7 @@ export class SubscriptionModule extends Module {
     private iconCollapse: Icon;
     private pnlSubscriptionBundles: StackLayout;
     private _data: ISubscription;
-    private nftMinter: ScomNftMinter;
-    private tonSubscription: ScomTonSubscription;
+    private subscription: ScomSubscription;
     onSubscribed: onSubscribedCallback;
 
     setData(data: ISubscription) {
@@ -82,18 +80,18 @@ export class SubscriptionModule extends Module {
     async _checkUserSubscription() {
         try {
             const subscriptionInfo = await this.checkUserSubscription(this._data.creatorId, this._data.communityId);
-            this.nftMinter.isRenewal = subscriptionInfo.isSubscribed;
-            if (subscriptionInfo.isSubscribed) this.nftMinter.renewalDate = subscriptionInfo.endTime;
+            this.subscription.isRenewal = subscriptionInfo.isSubscribed;
+            if (subscriptionInfo.isSubscribed) this.subscription.renewalDate = subscriptionInfo.endTime;
         } catch (err) {
             console.error(err);
         }
     }
 
-    private createWidget(isTonNetwork: boolean) {
-        const widget = isTonNetwork ? new ScomTonSubscription() : new ScomNftMinter();
+    private createWidget() {
+        const widget = new ScomSubscription();
         widget.display = 'block';
         widget.margin = { top: '1rem' };
-        widget.onMintedNFT = () => {
+        widget.onSubscribed = () => {
             widget.closeModal();
             if (this.onSubscribed) this.onSubscribed();
         }
@@ -102,16 +100,10 @@ export class SubscriptionModule extends Module {
 
     private async openNFTMinter(discountRuleId?: number) {
         const policy = this._data.policy;
-        const isTonNetwork = !policy.chainId;
-        if (isTonNetwork && !this.tonSubscription) {
-            this.tonSubscription = this.createWidget(isTonNetwork) as ScomTonSubscription;
+        if (!this.subscription) {
+            this.subscription = this.createWidget();
         }
-        if (!isTonNetwork && !this.nftMinter) {
-            this.nftMinter = this.createWidget(isTonNetwork) as ScomNftMinter;
-        }
-        const widget = isTonNetwork ? this.tonSubscription : this.nftMinter;
-        const isNftMinter = widget instanceof ScomNftMinter;
-        widget.openModal({
+        this.subscription.openModal({
             title: `${policy.paymentModel === PaymentModel.Subscription ? 'Subscribe' : 'Mint NFT'} to Unlock Content`,
             width: '38rem',
             zIndex: 200,
@@ -119,31 +111,19 @@ export class SubscriptionModule extends Module {
             padding: { top: "1rem", bottom: "1rem", left: "1.5rem", right: "1.5rem" },
             closeOnBackdropClick: false,
         });
-        await widget.ready();
-        widget.showLoading();
+        await this.subscription.ready();
+        this.subscription.showLoading();
         await this._checkUserSubscription();
-        if (isNftMinter) {
-            const walletAddresses = await getUserWalletAddresses();
-            const builder = widget.getConfigurators('customNft').find((conf: any) => conf.target === 'Builders');
-            builder.setData({
-                productType: 'Subscription',
-                nftType: this._data.tokenType,
-                chainId: this._data.chainId,
-                nftAddress: this._data.tokenAddress,
-                erc1155Index: this._data.tokenId,
-                recipients: walletAddresses,
-                discountRuleId: discountRuleId,
-                referrer: this._data.referrer
-            });
-        } else {
-            const builder = widget.getConfigurators().find((conf: any) => conf.target === 'Builders');
-            builder.setData({
-                ...this._data.policy,
-                creatorId: this._data.creatorId,
-                communityId: this._data.communityId,
-                discountRuleId: discountRuleId,
-            });
-        }
+        const walletAddresses = await getUserWalletAddresses();
+        const builder = this.subscription.getConfigurators().find((conf: any) => conf.target === 'Builders');
+        const data: any = {
+            ...policy,
+            recipients: walletAddresses,
+            creatorId: this._data.creatorId,
+            communityId: this._data.communityId,
+            discountRuleId: discountRuleId
+        };
+        builder.setData(data);
     }
 
     init() {

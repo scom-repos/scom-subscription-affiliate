@@ -135,8 +135,7 @@ declare module "@scom/scom-subscription-affiliate/components/subscriptionModule.
         private iconCollapse;
         private pnlSubscriptionBundles;
         private _data;
-        private nftMinter;
-        private tonSubscription;
+        private subscription;
         onSubscribed: onSubscribedCallback;
         setData(data: ISubscription): void;
         checkUserSubscription(communityCreatorId: string, communityId: string, paymentMethod?: PaymentMethod): Promise<ICheckUserSubscription>;

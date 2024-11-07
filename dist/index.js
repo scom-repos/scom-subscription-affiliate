@@ -175,7 +175,7 @@ define("@scom/scom-subscription-affiliate/components/subscriptionBundle.tsx", ["
     ], SubscriptionBundle);
     exports.SubscriptionBundle = SubscriptionBundle;
 });
-define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["require", "exports", "@ijstech/components", "@ijstech/eth-wallet", "@scom/scom-token-list", "@scom/scom-nft-minter", "@scom/scom-ton-subscription", "@scom/scom-social-sdk", "@scom/scom-subscription-affiliate/components/subscriptionBundle.tsx", "@scom/scom-subscription-affiliate/utils/index.ts"], function (require, exports, components_3, eth_wallet_1, scom_token_list_1, scom_nft_minter_1, scom_ton_subscription_1, scom_social_sdk_2, subscriptionBundle_1, utils_1) {
+define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["require", "exports", "@ijstech/components", "@ijstech/eth-wallet", "@scom/scom-token-list", "@scom/scom-subscription", "@scom/scom-social-sdk", "@scom/scom-subscription-affiliate/components/subscriptionBundle.tsx", "@scom/scom-subscription-affiliate/utils/index.ts"], function (require, exports, components_3, eth_wallet_1, scom_token_list_1, scom_subscription_1, scom_social_sdk_2, subscriptionBundle_1, utils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.SubscriptionModule = void 0;
@@ -213,19 +213,19 @@ define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["
         async _checkUserSubscription() {
             try {
                 const subscriptionInfo = await this.checkUserSubscription(this._data.creatorId, this._data.communityId);
-                this.nftMinter.isRenewal = subscriptionInfo.isSubscribed;
+                this.subscription.isRenewal = subscriptionInfo.isSubscribed;
                 if (subscriptionInfo.isSubscribed)
-                    this.nftMinter.renewalDate = subscriptionInfo.endTime;
+                    this.subscription.renewalDate = subscriptionInfo.endTime;
             }
             catch (err) {
                 console.error(err);
             }
         }
-        createWidget(isTonNetwork) {
-            const widget = isTonNetwork ? new scom_ton_subscription_1.default() : new scom_nft_minter_1.default();
+        createWidget() {
+            const widget = new scom_subscription_1.default();
             widget.display = 'block';
             widget.margin = { top: '1rem' };
-            widget.onMintedNFT = () => {
+            widget.onSubscribed = () => {
                 widget.closeModal();
                 if (this.onSubscribed)
                     this.onSubscribed();
@@ -234,16 +234,10 @@ define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["
         }
         async openNFTMinter(discountRuleId) {
             const policy = this._data.policy;
-            const isTonNetwork = !policy.chainId;
-            if (isTonNetwork && !this.tonSubscription) {
-                this.tonSubscription = this.createWidget(isTonNetwork);
+            if (!this.subscription) {
+                this.subscription = this.createWidget();
             }
-            if (!isTonNetwork && !this.nftMinter) {
-                this.nftMinter = this.createWidget(isTonNetwork);
-            }
-            const widget = isTonNetwork ? this.tonSubscription : this.nftMinter;
-            const isNftMinter = widget instanceof scom_nft_minter_1.default;
-            widget.openModal({
+            this.subscription.openModal({
                 title: `${policy.paymentModel === scom_social_sdk_2.PaymentModel.Subscription ? 'Subscribe' : 'Mint NFT'} to Unlock Content`,
                 width: '38rem',
                 zIndex: 200,
@@ -251,32 +245,19 @@ define("@scom/scom-subscription-affiliate/components/subscriptionModule.tsx", ["
                 padding: { top: "1rem", bottom: "1rem", left: "1.5rem", right: "1.5rem" },
                 closeOnBackdropClick: false,
             });
-            await widget.ready();
-            widget.showLoading();
+            await this.subscription.ready();
+            this.subscription.showLoading();
             await this._checkUserSubscription();
-            if (isNftMinter) {
-                const walletAddresses = await (0, utils_1.getUserWalletAddresses)();
-                const builder = widget.getConfigurators('customNft').find((conf) => conf.target === 'Builders');
-                builder.setData({
-                    productType: 'Subscription',
-                    nftType: this._data.tokenType,
-                    chainId: this._data.chainId,
-                    nftAddress: this._data.tokenAddress,
-                    erc1155Index: this._data.tokenId,
-                    recipients: walletAddresses,
-                    discountRuleId: discountRuleId,
-                    referrer: this._data.referrer
-                });
-            }
-            else {
-                const builder = widget.getConfigurators().find((conf) => conf.target === 'Builders');
-                builder.setData({
-                    ...this._data.policy,
-                    creatorId: this._data.creatorId,
-                    communityId: this._data.communityId,
-                    discountRuleId: discountRuleId,
-                });
-            }
+            const walletAddresses = await (0, utils_1.getUserWalletAddresses)();
+            const builder = this.subscription.getConfigurators().find((conf) => conf.target === 'Builders');
+            const data = {
+                ...policy,
+                recipients: walletAddresses,
+                creatorId: this._data.creatorId,
+                communityId: this._data.communityId,
+                discountRuleId: discountRuleId
+            };
+            builder.setData(data);
         }
         init() {
             super.init();

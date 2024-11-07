@@ -9,19 +9,12 @@
         "@scom/scom-social-sdk",
         "@ijstech/eth-wallet",
         "@scom/scom-token-list",
-        "@scom/scom-product-contract",
         "@scom/scom-network-list",
         "@scom/scom-multicall",
         "@scom/scom-dapp-container",
         "@scom/scom-tx-status-modal",
-        "@scom/scom-token-modal",
-        "@scom/scom-token-input",
+        "@scom/scom-product-contract",
         "@scom/scom-wallet-modal",
-        "@scom/scom-network-picker",
-        "@scom/scom-commission-proxy-contract",
-        "@scom/oswap-troll-nft-contract",
-        "@scom/scom-commission-fee-setup",
-        "@scom/scom-nft-minter",
-        "@scom/scom-ton-subscription"
+        "@scom/scom-subscription"
     ]
 }
